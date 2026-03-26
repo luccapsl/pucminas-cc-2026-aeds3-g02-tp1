@@ -1,10 +1,11 @@
 package Entidades;
+import Genericos.Registro;
 
 import java.io.*;
 import java.util.Date;
 import com.soundicly.jnanoidenhanced.jnanoid.NanoIdUtils;
 
-public class Curso {
+public class Curso implements Registro {
     protected final int TAM_CODIGO = 10;
     protected int idCurso = -1;
     protected String nome;
@@ -13,50 +14,42 @@ public class Curso {
     protected int idUsuario;
     protected Date dataInicio;
     protected String descricao;
-
-    public Curso(String nome, char estado, int idUsuario, Date dataInicio, String descricao) {
-        this.nome = nome;
-        this.codigo = this.genCodigo();
-        this.setEstado(estado);
-        this.idUsuario = idUsuario;
-        this.dataInicio = dataInicio;
-        this.descricao = descricao;
-        
-    }
-
-    public void listar() {
-        System.out.println("("+idCurso+") "+nome+" - "+dataInicio);
-    }
-
-    public void printar() {
-        System.out.println("NOME.........: " + nome);
-        System.out.println("CODIGO.......: " + codigo);
-        System.out.println("DESCRIÇÃO....: " + descricao);
-        System.out.println("DATA INÍCIO..: " + dataInicio);
-        System.out.print("ESTADO: ");
-        
-        switch (this.estado) {
-            case ('0'):
-                System.out.println("Ativo e recebendo inscrições");
-                break;
-            case ('1'):
-                System.out.println("Ativo, mas sem novas inscrições");
-                break;
-            case ('2'):
-                System.out.println("Concluído");
-                break;
-            case ('3'):
-                System.out.println("Coancelado");
-                break;
-            default:
-                System.out.println("[ERRO] - Estado de curso invalido");
-                throw new AssertionError();
-        }
-        
+    /**
+     * 
+     * Construtor vazio para Arquivo.java
+     * 
+     */
+    public Curso() {
+        this.nome = "";
+        this.codigo = "";
+        this.estado = '0';
+        this.idUsuario = -1;
+        this.dataInicio = new Date();
+        this.descricao = "";
     }
 
     /**
-     * GEra o codigo NanoId de TAM_CODIGO caracteres
+     * 
+     * Construtor padrão
+     * 
+     */
+    public Curso(String nome, char estado, Date dataInicio, String descricao) {
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new IllegalArgumentException("[ERRO] - Nome está vazio.");
+        }   
+        this.codigo = this.genCodigo();
+
+        this.setEstado(estado);
+
+        if (dataInicio == null) {
+            throw new IllegalArgumentException("[ERRO] - Data de início inválida.");
+        }
+        
+        this.descricao = descricao;
+    }
+
+    /**
+     * Gera o codigo NanoId de TAM_CODIGO caracteres
      *
      * @return String
      */
@@ -105,12 +98,12 @@ public class Curso {
         return baos.toByteArray();
     }
 
+    // ================== //
+    // Getters / Setters //
+    // ================== //
+
     public String getCodigo() {
         return codigo;
-    }
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
     }
 
     public Date getDataInicio() {
@@ -134,8 +127,9 @@ public class Curso {
     }
 
     public void setEstado(char estado) {
-        if (estado < 0 || estado > 3) {
-            System.out.println("[ERRO] - Estado invalido");
+        if (estado != '0' && estado != '1' && estado != '2' && estado != '3') {
+            System.out.println("[WARNING] - Estado invalido. Setando estado 0 como padrão.");
+            this.estado = 0;
         } else {
             this.estado = estado;
         }
