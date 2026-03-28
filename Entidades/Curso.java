@@ -1,9 +1,14 @@
 package Entidades;
-import Genericos.Registro;
-
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Date;
+
 import com.soundicly.jnanoidenhanced.jnanoid.NanoIdUtils;
+
+import Genericos.Registro;
 
 public class Curso implements Registro {
     protected final int TAM_CODIGO = 10;
@@ -36,15 +41,20 @@ public class Curso implements Registro {
     public Curso(String nome, char estado, Date dataInicio, String descricao) {
         if (nome == null || nome.trim().isEmpty()) {
             throw new IllegalArgumentException("[ERRO] - Nome está vazio.");
-        }   
+        } else {
+            this.nome = nome;
+        }
+
         this.codigo = this.genCodigo();
 
         this.setEstado(estado);
 
         if (dataInicio == null) {
             throw new IllegalArgumentException("[ERRO] - Data de início inválida.");
+        } else {
+            this.dataInicio = dataInicio;
         }
-        
+
         this.descricao = descricao;
     }
 
@@ -135,11 +145,13 @@ public class Curso implements Registro {
         }
     }
 
-    public int getIdCurso() {
+    @Override
+    public int getId() {
         return idCurso;
     }
 
-    public void setIdCurso(int idCurso) {
+    @Override
+    public void setId(int idCurso) {
         this.idCurso = idCurso;
     }
 
@@ -157,6 +169,17 @@ public class Curso implements Registro {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + this.idCurso + "\n" +
+               "Nome: " + this.nome + "\n" +
+               "Código: " + this.codigo + "\n" +
+               "Estado: " + this.estado + "\n" +
+               "ID do usuário: " + this.idUsuario + "\n" +
+               "Data de início: " + this.dataInicio + "\n" +
+               "Descrição: " + this.descricao;
     }
 
 }
