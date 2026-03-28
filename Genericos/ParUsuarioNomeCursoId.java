@@ -25,67 +25,61 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class ParUsuarioNomeCursoId implements aed3.RegistroArvoreBMais<ParUsuarioNomeCursoId> {
+public class ParUsuarioNomeCursoId implements Genericos.RegistroArvoreBMais<ParUsuarioNomeCursoId> {
 
-  private String usuario;
+  private int idUsuario;
   private String nomeCurso;
-  private int id;
+  private int idCurso;
   private short TAMANHO = 44;
 
   public ParUsuarioNomeCursoId() {
-    this("", "", -1);
+    this(0, "", 0);
   }
 
-  public ParUsuarioNomeCursoId(String u, String nc, int i) {
+  public ParUsuarioNomeCursoId(int u, String nc, int i) {
     try {
-      this.usuario = u;
+      this.idUsuario = u;
       this.nomeCurso = nc;
-      this.id = i;
-      if (u.getBytes().length + nc.getBytes().length + 4 > TAMANHO)
+      this.idCurso = i;
+      if (nc.getBytes().length + 8 > TAMANHO)
         throw new Exception("Número de caracteres do usuário ou do curso maior que o permitido. Os dados serão cortados.");
     } catch (Exception ec) {
       ec.printStackTrace();
     }
   }
 
-  @Override
-  public int hashCode() {
-    return Math.abs(this.usuario.hashCode() * 31 + this.nomeCurso.hashCode());
-  }
-
   public short size() {
     return this.TAMANHO;
-  }
-
-  public String toString() {
-    return this.usuario + ";" + this.nomeCurso + ";" + this.id;
   }
 
   public byte[] toByteArray() throws IOException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     DataOutputStream dos = new DataOutputStream(baos);
-    dos.writeUTF(usuario);
-    dos.writeUTF(nomeCurso);
-    dos.writeInt(id);
-    byte[] bs = baos.toByteArray();
-    byte[] bs2 = new byte[TAMANHO];
-    for (int i = 0; i < TAMANHO; i++)
-      bs2[i] = ' ';
-    for (int i = 0; i < bs.length && i < TAMANHO; i++)
-      bs2[i] = bs[i];
-    return bs2;
+    dos.writeInt(idUsuario);
+    dos.writeInt(idCurso);
+    dos.write(nomeCurso.getBytes());
+    return baos.toByteArray();
   }
 
   public void fromByteArray(byte[] ba) throws IOException {
     ByteArrayInputStream bais = new ByteArrayInputStream(ba);
     DataInputStream dis = new DataInputStream(bais);
-    this.usuario = dis.readUTF();
-    this.nomeCurso = dis.readUTF();
-    this.id = dis.readInt();
+    this.idUsuario = dis.readInt();
+    this.idCurso = dis.readInt();
+    byte[] nomeBytes = new byte[TAMANHO - 8];
+    dis.read(nomeBytes);
+    this.nomeCurso = new String(nomeBytes).trim();
   }
 
-  public static int hash(String usuario, String nomeCurso) {
-    return Math.abs(usuario.hashCode() * 31 + nomeCurso.hashCode());
+  public int compareTo(ParUsuarioNomeCursoId obj) {
+    int cmp = Integer.compare(this.idUsuario, obj.idUsuario);
+    if (cmp != 0) return cmp;
+    cmp = this.nomeCurso.compareTo(obj.nomeCurso);
+    if (cmp != 0) return cmp;
+    return Integer.compare(this.idCurso, obj.idCurso);
   }
 
+  public ParUsuarioNomeCursoId clone() {
+    return new ParUsuarioNomeCursoId(this.idUsuario, this.nomeCurso, this.idCurso);
+  }
 }

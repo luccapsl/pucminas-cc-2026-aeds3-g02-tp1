@@ -25,7 +25,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class ParCodigoID implements aed3.RegistroHashExtensivel<ParCodigoID> {
+public class ParCodigoID implements Genericos.RegistroHashExtensivel<ParCodigoID> {
 
   private String codigo;
   private int id;

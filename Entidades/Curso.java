@@ -26,7 +26,7 @@ public class Curso implements Registro {
      */
     public Curso() {
         this.nome = "";
-        this.codigo = "";
+        this.codigo = this.genCodigo();
         this.estado = '0';
         this.idUsuario = -1;
         this.dataInicio = new Date();
@@ -139,7 +139,7 @@ public class Curso implements Registro {
     public void setEstado(char estado) {
         if (estado != '0' && estado != '1' && estado != '2' && estado != '3') {
             System.out.println("[WARNING] - Estado invalido. Setando estado 0 como padrão.");
-            this.estado = 0;
+            this.estado = '0';
         } else {
             this.estado = estado;
         }

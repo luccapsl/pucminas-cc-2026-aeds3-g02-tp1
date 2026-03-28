@@ -13,9 +13,14 @@
  */
 package Genericos;
 
-import java.io.*;
-import java.util.ArrayList;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 
 // Esta versão da árvore funciona apenas como um conjunto de par de chaves.
 // A primeira chave pode repetir na árvore, mas não o par de chaves, 
