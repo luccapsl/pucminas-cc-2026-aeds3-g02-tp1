@@ -1,11 +1,11 @@
 package Entidades;
-import Genericos.Registro;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
+import Genericos.Registro;
 
 public class Usuario implements Registro{
     
@@ -16,6 +16,11 @@ public class Usuario implements Registro{
     private String perguntaSecreta;
     private String respostaSecreta;
 
+    /**
+     * 
+     * Construtor vazio para Arquivo.java
+     * 
+     */
     public Usuario() {
         this.id = -1;
         this.nome = "";
@@ -25,6 +30,11 @@ public class Usuario implements Registro{
         this.respostaSecreta = "";
     }
 
+    /**
+     * 
+     * Construtor padrao
+     * 
+     */
     public Usuario (String nome, String email, String hashSenha, String perguntaSecreta, String respostaSecreta){
         this.nome = nome;
         this.email = email;
@@ -94,6 +104,12 @@ public class Usuario implements Registro{
 
     // ===== Manipuladores de Arquivo =====
     
+    /**
+     * Converte os atributos do Objeto para um array de bytes
+     *
+     * @return byte[] contendo os dados do objeto em bytes
+     * @throws IOException se ocorrer erro ao escrever os dados no array
+     */
     public byte[] toByteArray() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(baos);
@@ -108,6 +124,12 @@ public class Usuario implements Registro{
         return baos.toByteArray();
     }
 
+    /**
+     * Converte o array de bytes enviado para atributos do Objeto
+     *
+     * @param byte[] ba contendo os dados do objeto em bytes
+     * @throws IOException se ocorrer erro ao ler os dados do array
+     */
     public void fromByteArray(byte[] b) throws IOException {
         ByteArrayInputStream bais = new ByteArrayInputStream(b);
         DataInputStream dis = new DataInputStream(bais);

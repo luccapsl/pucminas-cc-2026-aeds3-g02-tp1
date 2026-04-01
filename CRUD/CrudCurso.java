@@ -1,7 +1,14 @@
 package CRUD;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import Entidades.Curso;
-import Genericos.*;
-import java.util.*;
+import Genericos.ArvoreBMais;
+import Genericos.HashExtensivel;
+import Genericos.ParCodigoID;
+import Genericos.ParIdUsuarioIdCurso;
+import Genericos.ParUsuarioNomeCursoId;
 
 public class CrudCurso extends Genericos.Arquivo<Curso> {
 
@@ -9,6 +16,11 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
     ArvoreBMais<ParIdUsuarioIdCurso> arvoreUsuarioCurso;
     ArvoreBMais<ParUsuarioNomeCursoId> arvoreUsuarioNome;
 
+    /**
+     * 
+     * Construtor da classe CrudCurso
+     * 
+     */
     public CrudCurso() throws Exception {
         super("cursos", Curso.class.getConstructor());
         indiceIndiretoCodigo = new HashExtensivel<>(
@@ -29,19 +41,34 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
         );
     }
 
+    /**
+     * 
+     * Cria um novo curso no arquivo
+     * 
+     */
     @Override
     public int create(Curso c) throws Exception {
         int id = super.create(c);
         indiceIndiretoCodigo.create(new ParCodigoID(c.getCodigo(), id));
         arvoreUsuarioCurso.create(new ParIdUsuarioIdCurso(c.getIdUsuario(), id));
-        arvoreUsuarioNome.create(new ParUsuarioNomeCursoId(c.getNome(), c.getNome(), id));
+        arvoreUsuarioNome.create(new ParUsuarioNomeCursoId(c.getIdUsuario(), c.getNome(), id));
         return id;
     }
 
+    /**
+     * 
+     * Le um curso pelo id
+     * 
+     */
     public Curso read(int id) throws Exception {
         return super.read(id);
     }
 
+    /**
+     * 
+     * Le um curso pelo codigo
+     * 
+     */
     public Curso read(String codigo) throws Exception {
         ParCodigoID pci = indiceIndiretoCodigo.read(ParCodigoID.hash(codigo));
         if(pci == null)
@@ -49,8 +76,13 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
         return read(pci.getId());
     }
 
+    /**
+     * 
+     * Lista todos os cursos de um usuario
+     * 
+     */
     public ArrayList<Curso> readAllByUsuario(int idUsuario) throws Exception {
-        return arvoreUsuarioCurso.read(idUsuario).stream()
+        List<Curso> list = arvoreUsuarioCurso.read(new ParIdUsuarioIdCurso(idUsuario, Integer.MIN_VALUE)).stream()
             .map(p -> {
                 try {
                     return read(p.getIdCurso());
@@ -60,11 +92,17 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
                 }
             })
             .filter(c -> c != null)
-            .toList();
+            .collect(Collectors.toList());
+        return new ArrayList<>(list);
     }
 
+    /**
+     * 
+     * Lista cursos de um usuario ordenados por nome
+     * 
+     */
     public ArrayList<Curso> listarCursosUsuarioOrdenadoNome(int idUsuario) throws Exception {
-        return arvoreUsuarioNome.read(idUsuario).stream()
+        List<Curso> list = arvoreUsuarioNome.read(new ParUsuarioNomeCursoId(idUsuario, "", Integer.MIN_VALUE)).stream()
             .map(p -> {
                 try {
                     return read(p.getIdCurso());
@@ -74,28 +112,56 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
                 }
             })
             .filter(c -> c != null)
-            .toList();
+            .collect(Collectors.toList());
+        return new ArrayList<>(list);
     }
     
+    /**
+     * 
+     * Deleta um curso pelo codigo
+     * 
+     */
     public boolean delete(String codigo) throws Exception {
         ParCodigoID pci = indiceIndiretoCodigo.read(ParCodigoID.hash(codigo));
-        if(pci != null) 
-            if(delete(pci.getId())) 
-                return indiceIndiretoCodigo.delete(ParCodigoID.hash(codigo));
+        if(pci != null) {
+            Curso c = read(pci.getId());
+            if(c != null) {
+                if(delete(pci.getId())) {
+                    indiceIndiretoCodigo.delete(ParCodigoID.hash(codigo));
+                    arvoreUsuarioCurso.delete(new ParIdUsuarioIdCurso(c.getIdUsuario(), pci.getId()));
+                    arvoreUsuarioNome.delete(new ParUsuarioNomeCursoId(c.getIdUsuario(), c.getNome(), pci.getId()));
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
+    /**
+     * 
+     * Deleta um curso pelo id
+     * 
+     */
     @Override
     public boolean delete(int id) throws Exception {
         Curso c = super.read(id);
         if(c != null) {
-            if(super.delete(id))
-                return indiceIndiretoCodigo.delete(ParCodigoID.hash(c.getCodigo()));
+            if(super.delete(id)) {
+                indiceIndiretoCodigo.delete(ParCodigoID.hash(c.getCodigo()));
+                arvoreUsuarioCurso.delete(new ParIdUsuarioIdCurso(c.getIdUsuario(), id));
+                arvoreUsuarioNome.delete(new ParUsuarioNomeCursoId(c.getIdUsuario(), c.getNome(), id));
+                return true;
+            }
         }
         return false;
     }
     
 
+    /**
+     * 
+     * Atualiza um curso
+     * 
+     */
     @Override
     public boolean update(Curso novoCurso) throws Exception {
         Curso cursoVelho = read(novoCurso.getId());
@@ -106,16 +172,29 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
                 indiceIndiretoCodigo.create(new ParCodigoID(novoCurso.getCodigo(), novoCurso.getId()));
                 arvoreUsuarioCurso.delete(new ParIdUsuarioIdCurso(cursoVelho.getIdUsuario(), cursoVelho.getId()));
                 arvoreUsuarioCurso.create(new ParIdUsuarioIdCurso(novoCurso.getIdUsuario(), novoCurso.getId()));
-                arvoreUsuarioNome.delete(new ParUsuarioNomeCursoId(cursoVelho.getNome(), cursoVelho.getNome(), cursoVelho.getId()));
-                arvoreUsuarioNome.create(new ParUsuarioNomeCursoId(novoCurso.getNome(), novoCurso.getNome(), novoCurso.getId()));
+                arvoreUsuarioNome.delete(new ParUsuarioNomeCursoId(cursoVelho.getIdUsuario(), cursoVelho.getNome(), cursoVelho.getId()));
+                arvoreUsuarioNome.create(new ParUsuarioNomeCursoId(novoCurso.getIdUsuario(), novoCurso.getNome(), novoCurso.getId()));
+            } else if (novoCurso.getIdUsuario() != cursoVelho.getIdUsuario()) {
+                arvoreUsuarioCurso.delete(new ParIdUsuarioIdCurso(cursoVelho.getIdUsuario(), cursoVelho.getId()));
+                arvoreUsuarioCurso.create(new ParIdUsuarioIdCurso(novoCurso.getIdUsuario(), novoCurso.getId()));
+                arvoreUsuarioNome.delete(new ParUsuarioNomeCursoId(cursoVelho.getIdUsuario(), cursoVelho.getNome(), cursoVelho.getId()));
+                arvoreUsuarioNome.create(new ParUsuarioNomeCursoId(novoCurso.getIdUsuario(), novoCurso.getNome(), novoCurso.getId()));
+            } else if (novoCurso.getNome().compareTo(cursoVelho.getNome()) != 0) {
+                arvoreUsuarioNome.delete(new ParUsuarioNomeCursoId(cursoVelho.getIdUsuario(), cursoVelho.getNome(), cursoVelho.getId()));
+                arvoreUsuarioNome.create(new ParUsuarioNomeCursoId(novoCurso.getIdUsuario(), novoCurso.getNome(), novoCurso.getId()));
             }
             return true;
         }
         return false;
     }
 
+    /**
+     * 
+     * Lista cursos de um usuario ordenados por nome
+     * 
+     */
     public ArrayList<Curso> listarPorUsuarioOrdenadoNome(int idUsuario) throws Exception {
-        return arvoreUsuarioNome.read(idUsuario).stream()
+        List<Curso> list = arvoreUsuarioNome.read(new ParUsuarioNomeCursoId(idUsuario, "", Integer.MIN_VALUE)).stream()
             .map(p -> {
                 try {
                     return read(p.getId());
@@ -125,11 +204,17 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
                 }
             })
             .filter(c -> c != null)
-            .toList();
+            .collect(Collectors.toList());
+        return new ArrayList<>(list);
     }
 
+    /**
+     * 
+     * Lista cursos de um usuario
+     * 
+     */
     public ArrayList<Curso> listarPorUsuario(int idUsuario) throws Exception {
-        return arvoreUsuarioCurso.read(idUsuario).stream()
+        List<Curso> list = arvoreUsuarioCurso.read(new ParIdUsuarioIdCurso(idUsuario, Integer.MIN_VALUE)).stream()
             .map(p -> {
                 try {
                     return read(p.getIdCurso());
@@ -139,9 +224,15 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
                 }
             })
             .filter(c -> c != null)
-            .toList();
+            .collect(Collectors.toList());
+        return new ArrayList<>(list);
     }
 
+    /**
+     * 
+     * Abre um curso para inscricoes
+     * 
+     */
     boolean abrirCurso(int idCurso) throws Exception {
         Curso c = read(idCurso);
         if(c != null) {
@@ -151,6 +242,11 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
         return false;
     }
 
+    /**
+     * 
+     * Encerra inscricoes de um curso
+     * 
+     */
     boolean encerrarIncricoes(int idCurso) throws Exception {
         Curso c = read(idCurso);
         if(c != null) {
@@ -160,6 +256,11 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
         return false;
     }
 
+    /**
+     * 
+     * Encerra um curso
+     * 
+     */
     boolean encerrarCurso(int idCurso) throws Exception {
         Curso c = read(idCurso);
         if(c != null) {
@@ -169,6 +270,11 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
         return false;
     }
 
+    /**
+     * 
+     * Cancela um curso
+     * 
+     */
     boolean cancelarCurso(int idCurso) throws Exception {
         Curso c = read(idCurso);
         if(c != null) {

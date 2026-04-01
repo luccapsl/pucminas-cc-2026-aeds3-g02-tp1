@@ -1,13 +1,13 @@
+package Genericos;
+
 /*
 
 Esta classe representa um PAR CHAVE VALOR (PCV) 
-para uma entidade Pessoa. Seu objetivo é representar
-uma entrada de índice. 
+para uma entidade Usuario e Curso. Seu objetivo e representar
+uma entrada de indice para arvore B+ do relacionamento 1:N.
 
-
-Um índice direto de ID precisaria ser criado por meio
-de outra classe, cujos dados fossem um int para o ID
-e um long para o endereço
+Um indice de relacionamento contem um int para o idUsuario
+e um int para o idCurso
  
 Implementado pelo Prof. Marcos Kutova
 v1.0 - 2021
@@ -37,6 +37,13 @@ public class ParIdUsuarioIdCurso implements Genericos.RegistroArvoreBMais<ParIdU
         return 8; // tamanho fixo do registro (4 bytes para cada inteiro)
     }
 
+    /**
+     * 
+     * Converte os atributos do Objeto para um array de bytes
+     *
+     * @return byte[] contendo os dados do objeto em bytes
+     * @throws IOException se ocorrer erro ao escrever os dados no array
+     */
     public byte[] toByteArray() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(baos);
@@ -45,6 +52,13 @@ public class ParIdUsuarioIdCurso implements Genericos.RegistroArvoreBMais<ParIdU
         return baos.toByteArray();
     }
 
+    /**
+     * 
+     * Converte o array de bytes enviado para atributos do Objeto
+     *
+     * @param byte[] ba contendo os dados do objeto em bytes
+     * @throws IOException se ocorrer erro ao ler os dados do array
+     */
     public void fromByteArray(byte[] ba) throws IOException {
         ByteArrayInputStream bais = new ByteArrayInputStream(ba);
         DataInputStream dis = new DataInputStream(bais);
@@ -52,16 +66,50 @@ public class ParIdUsuarioIdCurso implements Genericos.RegistroArvoreBMais<ParIdU
         this.idCurso = dis.readInt();
     }
 
-  public int compareTo(T obj) {
-    ParIdUsuarioIdCurso outro = (ParIdUsuarioIdCurso) obj;
-    if (this.idUsuario != outro.idUsuario) {
-        return Integer.compare(this.idUsuario, outro.idUsuario);
-    } else {
-        return Integer.compare(this.idCurso, outro.idCurso);
+    /**
+     * 
+     * Compara dois objetos
+     *
+     * @param obj o objeto a comparar
+     * @return int resultado da comparacao
+     */
+    @Override
+    public int compareTo(ParIdUsuarioIdCurso obj) {
+        ParIdUsuarioIdCurso outro = (ParIdUsuarioIdCurso) obj;
+        if (this.idUsuario != outro.idUsuario) {
+            return Integer.compare(this.idUsuario, outro.idUsuario);
+        } else {
+            return Integer.compare(this.idCurso, outro.idCurso);
+        }
     }
-  }
 
-  public ParIdUsuarioIdCurso clone() {
-    return new ParIdUsuarioIdCurso(this.idUsuario, this.idCurso);
-  }
+    /**
+     * 
+     * Clona o objeto
+     *
+     * @return ParIdUsuarioIdCurso o clone
+     */
+    public ParIdUsuarioIdCurso clone() {
+        return new ParIdUsuarioIdCurso(this.idUsuario, this.idCurso);
+    }
+
+    /**
+     * 
+     * Retorna o idUsuario
+     *
+     * @return int o idUsuario
+     */
+    public int getIdUsuario() {
+        return this.idUsuario;
+    }
+
+    /**
+     * 
+     * Retorna o idCurso
+     *
+     * @return int o idCurso
+     */
+    public int getIdCurso() {
+        return this.idCurso;
+    }
 }

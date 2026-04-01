@@ -1,18 +1,20 @@
+package Genericos;
+
 /*
 
 Esta classe representa um PAR CHAVE VALOR (PCV) 
-para uma entidade Pessoa. Seu objetivo é representar
-uma entrada de índice. 
+para uma entidade Usuario. Seu objetivo e representar
+uma entrada de indice. 
 
-Esse índice será secundário e indireto, baseado no
-email de uma pessoa. Ao fazermos a busca por pessoa,
-ele retornará o ID dessa pessoa, para que esse ID
-possa ser buscado em um índice direto (que não é
+Esse indice sera secundario e indireto, baseado no
+email de um usuario. Ao fazermos a busca por usuario,
+ele retornara o ID desse usuario, para que esse ID
+possa ser buscado em um indice direto (que nao e
 apresentado neste projeto)
 
-Um índice direto de ID precisaria ser criado por meio
+Um indice direto de ID precisaria ser criado por meio
 de outra classe, cujos dados fossem um int para o ID
-e um long para o endereço
+e um long para o endereco
  
 Implementado pelo Prof. Marcos Kutova
 v1.0 - 2021
@@ -59,6 +61,13 @@ public class ParEmailID implements Genericos.RegistroHashExtensivel<ParEmailID> 
     return this.email + ";" + this.id;
   }
 
+  /**
+   * 
+   * Converte os atributos do Objeto para um array de bytes
+   *
+   * @return byte[] contendo os dados do objeto em bytes
+   * @throws IOException se ocorrer erro ao escrever os dados no array
+   */
   public byte[] toByteArray() throws IOException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     DataOutputStream dos = new DataOutputStream(baos);
@@ -73,6 +82,13 @@ public class ParEmailID implements Genericos.RegistroHashExtensivel<ParEmailID> 
     return bs2;
   }
 
+  /**
+   * 
+   * Converte o array de bytes enviado para atributos do Objeto
+   *
+   * @param byte[] ba contendo os dados do objeto em bytes
+   * @throws IOException se ocorrer erro ao ler os dados do array
+   */
   public void fromByteArray(byte[] ba) throws IOException {
     ByteArrayInputStream bais = new ByteArrayInputStream(ba);
     DataInputStream dis = new DataInputStream(bais);
@@ -80,8 +96,25 @@ public class ParEmailID implements Genericos.RegistroHashExtensivel<ParEmailID> 
     this.id = dis.readInt();
   }
 
+  /**
+   * 
+   * Metodo estatico para calcular hash do email
+   *
+   * @param email o email para calcular o hash
+   * @return int o valor do hash
+   */
   public static int hash(String email) {
     return Math.abs(email.hashCode());
+  }
+
+  /**
+   * 
+   * Retorna o id
+   *
+   * @return int o id
+   */
+  public int getId() {
+    return this.id;
   }
 
 }

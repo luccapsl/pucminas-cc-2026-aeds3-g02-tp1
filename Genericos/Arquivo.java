@@ -243,7 +243,6 @@ public class Arquivo<T extends Registro> {
 
     public void close() throws Exception {
         arquivo.close();
-        indiceDireto.close();
     }
 
 

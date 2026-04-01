@@ -1,12 +1,14 @@
+package Genericos;
+
 /*
 
 Esta classe representa um PAR CHAVE VALOR (PCV) 
-para uma entidade Pessoa. Seu objetivo é representar
+para uma entidade Usuario. Seu objetivo é representar
 uma entrada de índice. 
 
 Esse índice será secundário e indireto, baseado no
-email de uma pessoa. Ao fazermos a busca por pessoa,
-ele retornará o ID dessa pessoa, para que esse ID
+nome do curso de um usuario. Ao fazermos a busca por usuario,
+ele retornará o ID desse usuario, para que esse ID
 possa ser buscado em um índice direto (que não é
 apresentado neste projeto)
 
@@ -32,10 +34,23 @@ public class ParUsuarioNomeCursoId implements Genericos.RegistroArvoreBMais<ParU
   private int idCurso;
   private short TAMANHO = 44;
 
+  /**
+   * 
+   * Construtor vazio
+   *
+   */
   public ParUsuarioNomeCursoId() {
     this(0, "", 0);
   }
 
+  /**
+   * 
+   * Construtor padrao
+   *
+   * @param u o idUsuario
+   * @param nc o nomeCurso
+   * @param i o idCurso
+   */
   public ParUsuarioNomeCursoId(int u, String nc, int i) {
     try {
       this.idUsuario = u;
@@ -48,10 +63,23 @@ public class ParUsuarioNomeCursoId implements Genericos.RegistroArvoreBMais<ParU
     }
   }
 
+  /**
+   * 
+   * Retorna o tamanho do registro
+   *
+   * @return short o tamanho
+   */
   public short size() {
     return this.TAMANHO;
   }
 
+  /**
+   * 
+   * Converte os atributos do Objeto para um array de bytes
+   *
+   * @return byte[] contendo os dados do objeto em bytes
+   * @throws IOException se ocorrer erro ao escrever os dados no array
+   */
   public byte[] toByteArray() throws IOException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     DataOutputStream dos = new DataOutputStream(baos);
@@ -61,6 +89,13 @@ public class ParUsuarioNomeCursoId implements Genericos.RegistroArvoreBMais<ParU
     return baos.toByteArray();
   }
 
+  /**
+   * 
+   * Converte o array de bytes enviado para atributos do Objeto
+   *
+   * @param byte[] ba contendo os dados do objeto em bytes
+   * @throws IOException se ocorrer erro ao ler os dados do array
+   */
   public void fromByteArray(byte[] ba) throws IOException {
     ByteArrayInputStream bais = new ByteArrayInputStream(ba);
     DataInputStream dis = new DataInputStream(bais);
@@ -71,6 +106,13 @@ public class ParUsuarioNomeCursoId implements Genericos.RegistroArvoreBMais<ParU
     this.nomeCurso = new String(nomeBytes).trim();
   }
 
+  /**
+   * 
+   * Compara dois objetos
+   *
+   * @param obj o objeto a comparar
+   * @return int resultado da comparacao
+   */
   public int compareTo(ParUsuarioNomeCursoId obj) {
     int cmp = Integer.compare(this.idUsuario, obj.idUsuario);
     if (cmp != 0) return cmp;
@@ -79,7 +121,53 @@ public class ParUsuarioNomeCursoId implements Genericos.RegistroArvoreBMais<ParU
     return Integer.compare(this.idCurso, obj.idCurso);
   }
 
+  /**
+   * 
+   * Clona o objeto
+   *
+   * @return ParUsuarioNomeCursoId o clone
+   */
   public ParUsuarioNomeCursoId clone() {
     return new ParUsuarioNomeCursoId(this.idUsuario, this.nomeCurso, this.idCurso);
+  }
+
+  /**
+   * 
+   * Retorna o idUsuario
+   *
+   * @return int o idUsuario
+   */
+  public int getIdUsuario() {
+    return this.idUsuario;
+  }
+
+  /**
+   * 
+   * Retorna o nomeCurso
+   *
+   * @return String o nomeCurso
+   */
+  public String getNomeCurso() {
+    return this.nomeCurso;
+  }
+
+  /**
+   * 
+   * Retorna o idCurso
+   *
+   * @return int o idCurso
+   */
+  public int getIdCurso() {
+    return this.idCurso;
+  }
+
+  /**
+   * 
+   * Retorna o id
+   *
+   * @return int o id
+   */
+  public int getId() {
+    return this.idCurso;
   }
 }

@@ -38,22 +38,16 @@ public class Curso implements Registro {
      * Construtor padrão
      * 
      */
-    public Curso(String nome, char estado, Date dataInicio, String descricao) {
-        if (nome == null || nome.trim().isEmpty()) {
-            throw new IllegalArgumentException("[ERRO] - Nome está vazio.");
-        } else {
-            this.nome = nome;
-        }
+    public Curso(String nome, char estado, Date dataInicio, String descricao, int idUsuario) {
+        this.setNome(nome);
 
         this.codigo = this.genCodigo();
 
+        this.idUsuario = idUsuario;
+
         this.setEstado(estado);
 
-        if (dataInicio == null) {
-            throw new IllegalArgumentException("[ERRO] - Data de início inválida.");
-        } else {
-            this.dataInicio = dataInicio;
-        }
+        this.setDataInicio(dataInicio);
 
         this.descricao = descricao;
     }
@@ -121,7 +115,11 @@ public class Curso implements Registro {
     }
 
     public void setDataInicio(Date dataInicio) {
-        this.dataInicio = dataInicio;
+        if (dataInicio == null) {
+            throw new IllegalArgumentException("[ERRO] - Data de início inválida.");
+        } else {
+            this.dataInicio = dataInicio;
+        }
     }
 
     public String getDescricao() {
@@ -168,7 +166,11 @@ public class Curso implements Registro {
     }
 
     public void setNome(String nome) {
-        this.nome = nome;
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new IllegalArgumentException("[ERRO] - Nome está vazio.");
+        } else {
+            this.nome = nome;
+        }
     }
 
     @Override
