@@ -10,7 +10,6 @@ import Genericos.Registro;
 public class Usuario implements Registro{
     
     private int id;
-    private int idCurso;
     private String nome;
     private String email;
     private String hashSenha;
@@ -24,7 +23,6 @@ public class Usuario implements Registro{
      */
     public Usuario() {
         this.id = -1;
-        this.idCurso = -1;
         this.nome = "";
         this.email = "";
         this.hashSenha = "";
@@ -37,9 +35,8 @@ public class Usuario implements Registro{
      * Construtor padrao
      * 
      */
-    public Usuario (String nome, int idCurso, String email, String hashSenha, String perguntaSecreta, String respostaSecreta){
+    public Usuario (String nome, String email, String hashSenha, String perguntaSecreta, String respostaSecreta){
         this.nome = nome;
-        this.idCurso = idCurso;
         this.email = email;
         this.hashSenha = hashSenha;
         this.perguntaSecreta = perguntaSecreta;
@@ -50,11 +47,6 @@ public class Usuario implements Registro{
     public int getId(){
         return this.id;
     }
-
-    public int getIdCurso(){
-        return this.idCurso;
-    }
-
 
     public String getNome(){
         return this.nome;
@@ -81,10 +73,6 @@ public class Usuario implements Registro{
         this.id = id;
     }
 
-    public void setIdCurso(int idCurso){
-        this.idCurso = idCurso;
-    }
-
     public void setNome(String nome){
         this.nome = nome;
     }
@@ -107,7 +95,6 @@ public class Usuario implements Registro{
 
     public String toString() {
         return "\nID........: " + this.id +
-               "\nID Curso..: " + this.idCurso +
                "\nNome......: " + this.nome +
                "\nEmail.....: " + this.email +
                "\nSenha.....: " + this.hashSenha +
@@ -128,7 +115,6 @@ public class Usuario implements Registro{
         DataOutputStream dos = new DataOutputStream(baos);
 
         dos.writeInt(this.id);
-        dos.writeInt(this.idCurso);
         dos.writeUTF(this.nome);
         dos.writeUTF(this.email);
         dos.writeUTF(this.hashSenha);
@@ -149,7 +135,6 @@ public class Usuario implements Registro{
         DataInputStream dis = new DataInputStream(bais);
 
         this.id = dis.readInt();
-        this.idCurso = dis.readInt();
         this.nome = dis.readUTF();
         this.email = dis.readUTF();
         this.hashSenha = dis.readUTF();
