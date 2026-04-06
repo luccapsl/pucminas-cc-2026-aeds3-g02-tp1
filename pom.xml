@@ -34,6 +34,7 @@
         </repository>
     </repositories>
     <build>
+        <mainClass>Main</mainClass>
         <sourceDirectory>.</sourceDirectory> 
         <testSourceDirectory>.</testSourceDirectory>
         
