@@ -7,11 +7,13 @@ import Entidades.Usuario;
 
 public class ControleLogin {
     private CrudUsuario crudUsuario;
+
     public ControleLogin() {
         try {
             this.crudUsuario = new CrudUsuario();
         } catch (Exception e) {
             System.err.println("Erro ao inicializar o controle de login: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -29,13 +31,13 @@ public class ControleLogin {
                 System.out.println("Usuário não encontrado com o email fornecido.");
                 return null;
             }
-            
+
             if (!usuario.getSenha().equals(hashSenha)) {
                 System.out.println("Senha incorreta. Tente novamente.");
                 return null;
             }
-            
-            return usuario; 
+
+            return usuario;
 
         } catch (Exception e) {
             System.err.println("Erro ao processar login: " + e.getMessage());

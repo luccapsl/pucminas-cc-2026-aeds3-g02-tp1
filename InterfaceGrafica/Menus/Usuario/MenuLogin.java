@@ -25,10 +25,11 @@ public class MenuLogin implements IMenu {
         Usuario usuarioLogado = controleLogin.processarLogin(scanner);
         if (usuarioLogado == null) {
             System.out.println("Falha no login. Verifique suas credenciais e tente novamente.");
+            gerenciadorDeMenus.voltar();
         } else {
             gerenciadorDeMenus.setUsuarioLogado(usuarioLogado);
             System.out.println("Login bem-sucedido! Redirecionando para o menu principal...");
+            gerenciadorDeMenus.trocarTelaAtual(new MenuHome());
         }
-        gerenciadorDeMenus.trocarTelaAtual(new MenuHome());
     }
 }

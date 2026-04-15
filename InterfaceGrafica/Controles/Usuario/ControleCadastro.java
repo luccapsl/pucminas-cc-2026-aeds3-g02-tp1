@@ -9,7 +9,7 @@ public class ControleCadastro {
     private CrudUsuario crudUsuario;
 
     public ControleCadastro() {
-        try{
+        try {
             this.crudUsuario = new CrudUsuario();
         } catch (Exception e) {
             System.err.println("Erro ao inicializar o controle de cadastro: " + e.getMessage());
@@ -17,15 +17,23 @@ public class ControleCadastro {
     }
 
     public Usuario processarCadastro(Scanner scanner) {
-        try{
+        try {
             Usuario novoUsuario = new Usuario();
 
             String nome, email, senha, perguntaSecreta, respostaSecreta;
 
             System.out.print("Digite seu nome: ");
             nome = scanner.nextLine();
-            System.out.print("Digite seu email: ");
-            email = scanner.nextLine();
+            Usuario usuarioExistente = null;
+            do {
+                System.out.print("Digite seu email: ");
+                email = scanner.nextLine();
+                usuarioExistente = crudUsuario.read(email);
+                if (usuarioExistente != null) {
+                    System.out.println("Email já cadastrado. Por favor, tente outro.");
+                }
+            } while (usuarioExistente != null);
+
             System.out.print("Digite sua senha: ");
             senha = scanner.nextLine();
             System.out.print("Digite sua pergunta secreta: ");
@@ -35,6 +43,7 @@ public class ControleCadastro {
 
             novoUsuario.setNome(nome);
             novoUsuario.setEmail(email);
+
             novoUsuario.setSenha(senha);
             novoUsuario.setPerguntaSecreta(perguntaSecreta);
             novoUsuario.setRespostaSecreta(respostaSecreta);

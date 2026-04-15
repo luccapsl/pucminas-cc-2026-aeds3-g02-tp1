@@ -14,10 +14,12 @@ public class ControleMeusCursos {
     private CrudCurso crudCurso;
 
     public ControleMeusCursos() {
-        try{
+        try {
             this.crudCurso = new CrudCurso();
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.out.println("Erro ao inicializar o controle de cursos: " + e.getMessage());
+            e.printStackTrace();
+
         }
     }
 
@@ -53,9 +55,10 @@ public class ControleMeusCursos {
         Curso cursoSelecionado = cursos.get(escolha - 1);
         gerenciadorDeMenus.irPara(new MenuCurso(cursoSelecionado));
     }
+
     public void novoCurso(java.util.Scanner scanner, GerenciadorDeMenus gerenciadorDeMenus) {
         MenuNovoCurso menuNovoCurso = new MenuNovoCurso();
         gerenciadorDeMenus.irPara(menuNovoCurso);
-        
+
     }
 }

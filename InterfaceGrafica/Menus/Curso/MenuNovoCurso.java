@@ -21,7 +21,7 @@ public class MenuNovoCurso implements IMenu {
 
     @Override
     public void show(GerenciadorDeMenus gerenciadorDeMenus, Scanner scanner) {
-        Curso novoCurso = controleNovoCurso.processarNovoCurso(scanner);
+        Curso novoCurso = controleNovoCurso.processarNovoCurso(gerenciadorDeMenus.getUsuarioLogado(), scanner);
         if (novoCurso == null) {
             System.out.println("Falha ao criar o curso. Tente novamente.");
         } else {
