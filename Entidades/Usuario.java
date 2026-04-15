@@ -1,4 +1,5 @@
 package Entidades;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -7,8 +8,8 @@ import java.io.IOException;
 
 import Genericos.Registro;
 
-public class Usuario implements Registro{
-    
+public class Usuario implements Registro {
+
     private int id;
     private String nome;
     private String email;
@@ -35,7 +36,7 @@ public class Usuario implements Registro{
      * Construtor padrao
      * 
      */
-    public Usuario (String nome, String email, String hashSenha, String perguntaSecreta, String respostaSecreta){
+    public Usuario(String nome, String email, String hashSenha, String perguntaSecreta, String respostaSecreta) {
         this.nome = nome;
         this.email = email;
         this.hashSenha = hashSenha;
@@ -44,66 +45,72 @@ public class Usuario implements Registro{
     }
 
     // ===== Getters =====
-    public int getId(){
+    public int getId() {
         return this.id;
     }
 
-    public String getNome(){
+    public String getNome() {
         return this.nome;
     }
 
-    public String getEmail(){
+    public String getEmail() {
         return this.email;
     }
 
-    public String getSenha(){
+    public String getSenha() {
         return this.hashSenha;
     }
 
-    public String getPerguntaSecreta(){
+    public String getPerguntaSecreta() {
         return this.perguntaSecreta;
     }
 
-    public String getRespostaSecreta(){
+    public String getRespostaSecreta() {
         return this.respostaSecreta;
     }
 
     // ===== Setters =====
-    public void setId(int id){
+    public void setId(int id) {
         this.id = id;
     }
 
-    public void setNome(String nome){
+    public void setNome(String nome) {
         this.nome = nome;
     }
 
-    public void setEmail(String email){
+    public void setEmail(String email) {
         this.email = email;
     }
 
-    public void setSenha(String senha){
+    public void setSenha(String senha) {
         this.hashSenha = String.valueOf(senha.hashCode());
     }
 
-    public void setPerguntaSecreta(String perguntaSecreta){
+    public void setPerguntaSecreta(String perguntaSecreta) {
         this.perguntaSecreta = perguntaSecreta;
     }
 
-    public void setRespostaSecreta(String respostaSecreta){
+    public void setRespostaSecreta(String respostaSecreta) {
         this.respostaSecreta = respostaSecreta;
     }
 
     public String toString() {
         return "\nID........: " + this.id +
-               "\nNome......: " + this.nome +
-               "\nEmail.....: " + this.email +
-               "\nSenha.....: " + this.hashSenha +
-               "\nPergunta..: " + this.perguntaSecreta +
-               "\nResposta..: " + this.respostaSecreta;
+                "\nNome......: " + this.nome +
+                "\nEmail.....: " + this.email +
+                "\nSenha.....: " + this.hashSenha +
+                "\nPergunta..: " + this.perguntaSecreta +
+                "\nResposta..: " + this.respostaSecreta;
+    }
+
+    public String toStringSafe() {
+        return "\nID........: " + this.id +
+                "\nNome......: " + this.nome +
+                "\nEmail.....: " + this.email;
     }
 
     // ===== Manipuladores de Arquivo =====
-    
+
     /**
      * Converte os atributos do Objeto para um array de bytes
      *
