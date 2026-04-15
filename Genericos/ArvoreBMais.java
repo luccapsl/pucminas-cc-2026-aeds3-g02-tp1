@@ -216,87 +216,96 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
         // Nesse primeiro passo, todas as chaves menores que a chave buscada
         // são ultrapassadas
         int i = 0;
-        while (elem!=null && i < pa.elementos.size() && elem.compareTo(pa.elementos.get(i)) > 0) {
+        while (elem != null && i < pa.elementos.size() && elem.compareTo(pa.elementos.get(i)) > 0) {
             i++;
         }
 
         // Chave encontrada (ou pelo menos o ponto onde ela deveria estar).
         // Segundo passo - testa se a chave é a chave buscada e se está em uma folha
         // Obs.: em uma árvore B+, todas as chaves válidas estão nas folhas
-        if (i < pa.elementos.size() && pa.filhos.get(0) == -1 && (elem==null || elem.compareTo(pa.elementos.get(i)) == 0)) {
+        if (i < pa.elementos.size() && pa.filhos.get(0) == -1) {
+            // Verifica se é uma busca exata ou por prefixo (primeira chave igual)
+            boolean exactMatch = (elem != null && elem.compareTo(pa.elementos.get(i)) == 0);
+            boolean prefixMatch = false;
 
-            // Cria a lista de retorno e insere os elementos encontrados
-            ArrayList<T> lista = new ArrayList<>();
-            while (elem==null || elem.compareTo(pa.elementos.get(i)) <= 0) {
-
-                if (elem==null || elem.compareTo(pa.elementos.get(i)) == 0)
-                    lista.add(pa.elementos.get(i));
-                i++;
-
-                // Se chegar ao fim da folha, então avança para a folha seguinte
-                if (i == pa.elementos.size()) {
-                    if (pa.proxima == -1)
-                        break;
-                    arquivo.seek(pa.proxima);
-                    arquivo.read(buffer);
-                    pa.fromByteArray(buffer);
-                    i = 0;
+            if (!exactMatch && elem != null) {
+                // Para classes específicas, podemos verificar se é uma busca por prefixo
+                // Exemplo: ParUsuarioNomeCursoId e ParIdUsuarioIdCurso
+                if (elem instanceof ParUsuarioNomeCursoId) {
+                    ParUsuarioNomeCursoId e = (ParUsuarioNomeCursoId) elem;
+                    ParUsuarioNomeCursoId atual = (ParUsuarioNomeCursoId) pa.elementos.get(i);
+                    // Se idUsuario igual, nomeCurso vazio e idCurso mínimo, considera prefixo
+                    if (e.getIdUsuario() == atual.getIdUsuario() &&
+                        e.getNomeCurso().isEmpty() &&
+                        e.getIdCurso() == Integer.MIN_VALUE) {
+                        prefixMatch = true;
+                    }
+                } else if (elem instanceof ParIdUsuarioIdCurso) {
+                    ParIdUsuarioIdCurso e = (ParIdUsuarioIdCurso) elem;
+                    ParIdUsuarioIdCurso atual = (ParIdUsuarioIdCurso) pa.elementos.get(i);
+                    if (e.getIdUsuario() == atual.getIdUsuario() &&
+                        e.getIdCurso() == Integer.MIN_VALUE) {
+                        prefixMatch = true;
+                    }
                 }
             }
-            return lista;
-        }
 
-        // Terceiro passo - se a chave não tiver sido encontrada nesta folha,
-        // testa se ela está na próxima folha. Isso pode ocorrer devido ao
-        // processo de ordenação.
-        else if (i == pa.elementos.size() && pa.filhos.get(0) == -1) {
-
-            // Testa se há uma próxima folha. Nesse caso, retorna um vetor vazio
-            if (pa.proxima == -1) {
-                ArrayList<T> resposta = new ArrayList<>();
-                return resposta;
-            }
-
-            // Lê a próxima folha
-            arquivo.seek(pa.proxima);
-            arquivo.read(buffer);
-            pa.fromByteArray(buffer);
-
-            // Testa se a chave é a primeira da próxima folha
-            i = 0;
-            if (elem.compareTo(pa.elementos.get(i)) <= 0) {
-
-                // Cria a lista de retorno
+            if (exactMatch || prefixMatch) {
+                // Cria a lista de retorno e insere os elementos encontrados
                 ArrayList<T> lista = new ArrayList<>();
-
-                // Testa se a chave foi encontrada, e adiciona todas as chaves
-                // secundárias
-                while (elem.compareTo(pa.elementos.get(i)) <= 0) {
-                    if (elem.compareTo(pa.elementos.get(i)) == 0)
-                        lista.add(pa.elementos.get(i));
+                // Enquanto estiver dentro da mesma chave primária (se for prefixo) ou chave completa
+                while (i < pa.elementos.size()) {
+                    T atual = pa.elementos.get(i);
+                    if (prefixMatch) {
+                        // Para prefixo, enquanto o primeiro campo for igual
+                        if (elem instanceof ParUsuarioNomeCursoId) {
+                            ParUsuarioNomeCursoId e = (ParUsuarioNomeCursoId) elem;
+                            ParUsuarioNomeCursoId a = (ParUsuarioNomeCursoId) atual;
+                            if (e.getIdUsuario() != a.getIdUsuario()) break;
+                        } else if (elem instanceof ParIdUsuarioIdCurso) {
+                            ParIdUsuarioIdCurso e = (ParIdUsuarioIdCurso) elem;
+                            ParIdUsuarioIdCurso a = (ParIdUsuarioIdCurso) atual;
+                            if (e.getIdUsuario() != a.getIdUsuario()) break;
+                        }
+                        lista.add(atual);
+                    } else {
+                        // Busca exata: enquanto compareTo == 0
+                        if (elem.compareTo(atual) != 0) break;
+                        lista.add(atual);
+                    }
                     i++;
+                    // Se chegar ao fim da folha, então avança para a folha seguinte
                     if (i == pa.elementos.size()) {
-                        if (pa.proxima == -1)
-                            break;
+                        if (pa.proxima == -1) break;
                         arquivo.seek(pa.proxima);
                         arquivo.read(buffer);
                         pa.fromByteArray(buffer);
                         i = 0;
+                        // Verifica se o primeiro elemento da próxima folha ainda pertence ao grupo
+                        if (!pa.elementos.isEmpty()) {
+                            T primeiro = pa.elementos.get(0);
+                            if (prefixMatch) {
+                                if (elem instanceof ParUsuarioNomeCursoId) {
+                                    ParUsuarioNomeCursoId e = (ParUsuarioNomeCursoId) elem;
+                                    ParUsuarioNomeCursoId p = (ParUsuarioNomeCursoId) primeiro;
+                                    if (e.getIdUsuario() != p.getIdUsuario()) break;
+                                } else if (elem instanceof ParIdUsuarioIdCurso) {
+                                    ParIdUsuarioIdCurso e = (ParIdUsuarioIdCurso) elem;
+                                    ParIdUsuarioIdCurso p = (ParIdUsuarioIdCurso) primeiro;
+                                    if (e.getIdUsuario() != p.getIdUsuario()) break;
+                                }
+                            } else {
+                                if (elem.compareTo(primeiro) != 0) break;
+                            }
+                        }
                     }
                 }
-
                 return lista;
-            }
-
-            // Se não houver uma próxima página, retorna um vetor vazio
-            else {
-                ArrayList<T> resposta = new ArrayList<>();
-                return resposta;
             }
         }
 
         // Chave ainda não foi encontrada, continua a busca recursiva pela árvore
-        if (elem==null || i == pa.elementos.size() || elem.compareTo(pa.elementos.get(i)) <= 0)
+        if (elem == null || i == pa.elementos.size() || elem.compareTo(pa.elementos.get(i)) <= 0)
             return read1(elem, pa.filhos.get(i));
         else
             return read1(elem, pa.filhos.get(i + 1));
