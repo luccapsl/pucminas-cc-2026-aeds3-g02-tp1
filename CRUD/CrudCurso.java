@@ -73,7 +73,7 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
         ParCodigoID pci = indiceIndiretoCodigo.read(ParCodigoID.hash(codigo));
         if(pci == null)
             return null;
-        return read(pci.getId());
+        return super.read(pci.getId());
     }
 
     /**
