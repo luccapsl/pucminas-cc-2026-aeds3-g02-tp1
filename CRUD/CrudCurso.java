@@ -205,7 +205,7 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
         List<Curso> list = arvoreUsuarioNome.read(new ParUsuarioNomeCursoId(idUsuario, "", Integer.MIN_VALUE)).stream()
                 .map(p -> {
                     try {
-                        return read(p.getId());
+                        return read(p.getIdCurso());
                     } catch (Exception e) {
                         e.printStackTrace();
                         return null;
