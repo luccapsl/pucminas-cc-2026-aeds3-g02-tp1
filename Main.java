@@ -1,12 +1,13 @@
 import java.util.Scanner;
-import Menus.GerenciadorDeMenus;
-import Menus.MenuPrincipal;
+
+import InterfaceGrafica.Menus.GerenciadorDeMenus;
+import InterfaceGrafica.Menus.Usuario.MenuAuth;
 
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         
-        GerenciadorDeMenus gerenciador = new GerenciadorDeMenus(new MenuPrincipal());
+        GerenciadorDeMenus gerenciador = new GerenciadorDeMenus(new MenuAuth());
         
         try {
             gerenciador.iniciar(scanner);

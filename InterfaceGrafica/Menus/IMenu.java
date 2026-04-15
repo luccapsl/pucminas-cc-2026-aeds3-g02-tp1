@@ -1,4 +1,4 @@
-package Menus;
+package InterfaceGrafica.Menus;
 
 import java.util.Scanner;
 
