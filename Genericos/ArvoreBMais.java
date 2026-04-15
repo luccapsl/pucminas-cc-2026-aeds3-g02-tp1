@@ -479,9 +479,9 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
 
         // Caso 2 - Novo registro deve ficar na página da direita
         else {
-
             int j = maxElementos - meio;
-            while (elemAux.compareTo(np.elementos.get(j - 1)) < 0)
+    
+            while (j > 0 && elemAux.compareTo(np.elementos.get(j - 1)) < 0)
                 j--;
             np.elementos.add(j, elemAux);
             np.filhos.add(j + 1, paginaAux);
@@ -494,7 +494,6 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
                 np.elementos.remove(0);
                 np.filhos.remove(0);
             }
-
         }
 
         // Obtém um endereço para a nova página (página excluída ou fim do arquivo)
