@@ -1,7 +1,4 @@
 package CRUD;
-
-import java.io.File;
-
 import Entidades.Usuario;
 import Genericos.HashExtensivel;
 import Genericos.ParEmailID;
@@ -18,10 +15,10 @@ public class CrudUsuario extends Genericos.Arquivo<Usuario> {
     public CrudUsuario() throws Exception {
         super("usuarios", Usuario.class.getConstructor());
         indiceIndiretoEmail = new HashExtensivel<>(
-                ParEmailID.class.getConstructor(),
-                4,
-                "." + File.separator + "dados" + File.separator + "usuarios" + File.separator + "indiceEmail.d.db", // diretório
-                "." + File.separator + "dados" + File.separator + "usuarios" + File.separator + "indiceEmail.c.db" // cestos
+            ParEmailID.class.getConstructor(), 
+            4, 
+            ".\\dados\\usuarios\\indiceEmail.d.db",   // diretório
+            ".\\dados\\usuarios\\indiceEmail.c.db"    // cestos 
         );
     }
 
@@ -44,11 +41,11 @@ public class CrudUsuario extends Genericos.Arquivo<Usuario> {
      */
     public Usuario read(String email) throws Exception {
         ParEmailID pei = indiceIndiretoEmail.read(ParEmailID.hash(email));
-        if (pei == null)
+        if(pei == null)
             return null;
         return read(pei.getId());
     }
-
+    
     /**
      * 
      * Deleta um usuario pelo email
@@ -56,8 +53,8 @@ public class CrudUsuario extends Genericos.Arquivo<Usuario> {
      */
     public boolean delete(String email) throws Exception {
         ParEmailID pei = indiceIndiretoEmail.read(ParEmailID.hash(email));
-        if (pei != null)
-            if (delete(pei.getId()))
+        if(pei != null) 
+            if(delete(pei.getId())) 
                 return indiceIndiretoEmail.delete(ParEmailID.hash(email));
         return false;
     }
@@ -70,8 +67,8 @@ public class CrudUsuario extends Genericos.Arquivo<Usuario> {
     @Override
     public boolean delete(int id) throws Exception {
         Usuario c = super.read(id);
-        if (c != null) {
-            if (super.delete(id))
+        if(c != null) {
+            if(super.delete(id))
                 return indiceIndiretoEmail.delete(ParEmailID.hash(c.getEmail()));
         }
         return false;
@@ -86,8 +83,8 @@ public class CrudUsuario extends Genericos.Arquivo<Usuario> {
     public boolean update(Usuario novoUsuario) throws Exception {
         Usuario usuarioVelho = read(novoUsuario.getId());
 
-        if (super.update(novoUsuario)) {
-            if (novoUsuario.getEmail().compareTo(usuarioVelho.getEmail()) != 0) {
+        if(super.update(novoUsuario)) {
+            if(novoUsuario.getEmail().compareTo(usuarioVelho.getEmail())!=0) {
                 indiceIndiretoEmail.delete(ParEmailID.hash(usuarioVelho.getEmail()));
                 indiceIndiretoEmail.create(new ParEmailID(novoUsuario.getEmail(), novoUsuario.getId()));
             }
