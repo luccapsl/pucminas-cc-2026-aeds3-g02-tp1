@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.soundicly.jnanoidenhanced.jnanoid.NanoIdUtils;
@@ -175,13 +176,25 @@ public class Curso implements Registro {
 
     @Override
     public String toString() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         return "ID: " + this.idCurso + "\n" +
                "Nome: " + this.nome + "\n" +
                "Código: " + this.codigo + "\n" +
                "Estado: " + this.estado + "\n" +
                "ID do usuário: " + this.idUsuario + "\n" +
-               "Data de início: " + this.dataInicio + "\n" +
+               "Data de início: " + sdf.format(this.dataInicio) + "\n" +
                "Descrição: " + this.descricao;
+    }
+
+    public String toStringSafe() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        EstadoCurso estadoCurso = EstadoCurso.fromCodigo(this.estado);
+        String estadoStr = (estadoCurso != null) ? estadoCurso.getDescricao() : "Desconhecido";
+        return "\nNome.........: " + this.nome +
+               "\nCódigo.......: " + this.codigo +
+               "\nEstado.......: " + estadoStr +
+               "\nData início..: " + sdf.format(this.dataInicio) +
+               "\nDescrição....: " + this.descricao;
     }
 
 }

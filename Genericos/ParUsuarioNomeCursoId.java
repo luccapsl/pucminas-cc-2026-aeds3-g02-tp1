@@ -85,7 +85,10 @@ public class ParUsuarioNomeCursoId implements Genericos.RegistroArvoreBMais<ParU
     DataOutputStream dos = new DataOutputStream(baos);
     dos.writeInt(idUsuario);
     dos.writeInt(idCurso);
-    dos.write(nomeCurso.getBytes());
+    byte[] nomeBytes = new byte[TAMANHO - 8]; // preenche com zeros
+    byte[] original = nomeCurso.getBytes();
+    System.arraycopy(original, 0, nomeBytes, 0, Math.min(original.length, nomeBytes.length));
+    dos.write(nomeBytes);
     return baos.toByteArray();
   }
 

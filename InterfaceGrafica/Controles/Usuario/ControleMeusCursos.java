@@ -28,20 +28,23 @@ public class ControleMeusCursos {
             return this.crudCurso.listarCursosUsuarioOrdenadoNome(usuario.getId());
         } catch (Exception e) {
             System.out.println("Erro ao obter cursos do usuário: " + e.getMessage());
+            System.out.println("Retornando lista vazia.");
+            e.printStackTrace();
             return null;
         }
     }
 
     public void exibirCursos(List<Curso> cursos) {
         if (cursos == null || cursos.isEmpty()) {
-            System.out.println("Você não está matriculado em nenhum curso.");
+            System.out.println("Você não possui nenhum curso.");
             return;
         }
 
         System.out.println("CURSOS");
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
         for (int i = 0; i < cursos.size(); i++) {
             Curso curso = cursos.get(i);
-            System.out.printf("(%d) %s - %s%n", i + 1, curso.getNome(), curso.getDataInicio().toString());
+            System.out.printf("(%d) %s - %s%n", i + 1, curso.getNome(), sdf.format(curso.getDataInicio()));
         }
         System.out.println();
     }

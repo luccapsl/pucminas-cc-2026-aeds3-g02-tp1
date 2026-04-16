@@ -175,7 +175,7 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
         pa.fromByteArray(buffer);
 
         int i = 0;
-        while (elem!=null && i < pa.elementos.size() && elem.compareTo(pa.elementos.get(i)) > 0) {
+        while (elem != null && i < pa.elementos.size() && elem.compareTo(pa.elementos.get(i)) > 0) {
             i++;
         }
 
@@ -195,15 +195,15 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
                     ParUsuarioNomeCursoId atual = (ParUsuarioNomeCursoId) pa.elementos.get(i);
                     // Se idUsuario igual, nomeCurso vazio e idCurso mínimo, considera prefixo
                     if (e.getIdUsuario() == atual.getIdUsuario() &&
-                        e.getNomeCurso().isEmpty() &&
-                        e.getIdCurso() == Integer.MIN_VALUE) {
+                            e.getNomeCurso().isEmpty() &&
+                            e.getIdCurso() == Integer.MIN_VALUE) {
                         prefixMatch = true;
                     }
                 } else if (elem instanceof ParIdUsuarioIdCurso) {
                     ParIdUsuarioIdCurso e = (ParIdUsuarioIdCurso) elem;
                     ParIdUsuarioIdCurso atual = (ParIdUsuarioIdCurso) pa.elementos.get(i);
                     if (e.getIdUsuario() == atual.getIdUsuario() &&
-                        e.getIdCurso() == Integer.MIN_VALUE) {
+                            e.getIdCurso() == Integer.MIN_VALUE) {
                         prefixMatch = true;
                     }
                 }
@@ -212,7 +212,8 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
             if (exactMatch || prefixMatch) {
                 // Cria a lista de retorno e insere os elementos encontrados
                 ArrayList<T> lista = new ArrayList<>();
-                // Enquanto estiver dentro da mesma chave primária (se for prefixo) ou chave completa
+                // Enquanto estiver dentro da mesma chave primária (se for prefixo) ou chave
+                // completa
                 while (i < pa.elementos.size()) {
                     T atual = pa.elementos.get(i);
                     if (prefixMatch) {
@@ -220,22 +221,26 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
                         if (elem instanceof ParUsuarioNomeCursoId) {
                             ParUsuarioNomeCursoId e = (ParUsuarioNomeCursoId) elem;
                             ParUsuarioNomeCursoId a = (ParUsuarioNomeCursoId) atual;
-                            if (e.getIdUsuario() != a.getIdUsuario()) break;
+                            if (e.getIdUsuario() != a.getIdUsuario())
+                                break;
                         } else if (elem instanceof ParIdUsuarioIdCurso) {
                             ParIdUsuarioIdCurso e = (ParIdUsuarioIdCurso) elem;
                             ParIdUsuarioIdCurso a = (ParIdUsuarioIdCurso) atual;
-                            if (e.getIdUsuario() != a.getIdUsuario()) break;
+                            if (e.getIdUsuario() != a.getIdUsuario())
+                                break;
                         }
                         lista.add(atual);
                     } else {
                         // Busca exata: enquanto compareTo == 0
-                        if (elem.compareTo(atual) != 0) break;
+                        if (elem.compareTo(atual) != 0)
+                            break;
                         lista.add(atual);
                     }
                     i++;
                     // Se chegar ao fim da folha, então avança para a folha seguinte
                     if (i == pa.elementos.size()) {
-                        if (pa.proxima == -1) break;
+                        if (pa.proxima == -1)
+                            break;
                         arquivo.seek(pa.proxima);
                         arquivo.read(buffer);
                         pa.fromByteArray(buffer);
@@ -247,14 +252,17 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
                                 if (elem instanceof ParUsuarioNomeCursoId) {
                                     ParUsuarioNomeCursoId e = (ParUsuarioNomeCursoId) elem;
                                     ParUsuarioNomeCursoId p = (ParUsuarioNomeCursoId) primeiro;
-                                    if (e.getIdUsuario() != p.getIdUsuario()) break;
+                                    if (e.getIdUsuario() != p.getIdUsuario())
+                                        break;
                                 } else if (elem instanceof ParIdUsuarioIdCurso) {
                                     ParIdUsuarioIdCurso e = (ParIdUsuarioIdCurso) elem;
                                     ParIdUsuarioIdCurso p = (ParIdUsuarioIdCurso) primeiro;
-                                    if (e.getIdUsuario() != p.getIdUsuario()) break;
+                                    if (e.getIdUsuario() != p.getIdUsuario())
+                                        break;
                                 }
                             } else {
-                                if (elem.compareTo(primeiro) != 0) break;
+                                if (elem.compareTo(primeiro) != 0)
+                                    break;
                             }
                         }
                     }
@@ -264,7 +272,7 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
         }
 
         // Chave ainda não foi encontrada, continua a busca recursiva pela árvore
-        if (elem == null || i == pa.elementos.size() || elem.compareTo(pa.elementos.get(i)) <= 0)
+        if (elem == null || i == pa.elementos.size() || elem.compareTo(pa.elementos.get(i)) <= 0) {
             return read1(elem, pa.filhos.get(i));
         } else {
             return read1(elem, pa.filhos.get(i + 1));
@@ -295,7 +303,7 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
 
             arquivo.seek(8);
             long end = arquivo.readLong();
-            if(end==-1) {
+            if (end == -1) {
                 end = arquivo.length();
             } else {
                 arquivo.seek(end);
@@ -402,7 +410,7 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
 
         arquivo.seek(8);
         long end = arquivo.readLong();
-        if(end==-1) {
+        if (end == -1) {
             end = arquivo.length();
         } else {
             arquivo.seek(end);
@@ -566,8 +574,7 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
                 if (pFilho.filhos.get(0) != -1) {
                     pIrmaoEsq.elementos.add(pa.elementos.remove(diminuido - 1));
                     pIrmaoEsq.filhos.add(pFilho.filhos.remove(0));
-                }
-                else {
+                } else {
                     pa.elementos.remove(diminuido - 1);
                     pFilho.filhos.remove(0);
                 }
@@ -575,7 +582,7 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
 
                 pIrmaoEsq.elementos.addAll(pFilho.elementos);
                 pIrmaoEsq.filhos.addAll(pFilho.filhos);
-                pFilho.elementos.clear(); 
+                pFilho.elementos.clear();
                 pFilho.filhos.clear();
 
                 if (pIrmaoEsq.filhos.get(0) == -1)
@@ -592,8 +599,7 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
                 if (pFilho.filhos.get(0) != -1) {
                     pFilho.elementos.add(pa.elementos.remove(diminuido));
                     pFilho.filhos.add(pIrmaoDir.filhos.remove(0));
-                }
-                else {
+                } else {
                     pa.elementos.remove(diminuido);
                     pFilho.filhos.remove(0);
                 }
@@ -601,7 +607,7 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
 
                 pFilho.elementos.addAll(pIrmaoDir.elementos);
                 pFilho.filhos.addAll(pIrmaoDir.filhos);
-                pIrmaoDir.elementos.clear(); 
+                pIrmaoDir.elementos.clear();
                 pIrmaoDir.filhos.clear();
 
                 pFilho.proxima = pIrmaoDir.proxima;

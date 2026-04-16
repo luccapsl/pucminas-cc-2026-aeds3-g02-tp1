@@ -23,7 +23,7 @@ public class MenuHome implements IMenu {
     public void show(GerenciadorDeMenus gerenciadorDeMenus, Scanner scanner) {
 
         OpcaoHome opcaoHome = MenuUtils.interacaoMenu(OpcaoHome.class, scanner);
-        
+
         switch (opcaoHome) {
             case MEUS_DADOS:
                 controleHome.meusDados(gerenciadorDeMenus, scanner);
@@ -35,12 +35,11 @@ public class MenuHome implements IMenu {
                 controleHome.minhasInscricoes(gerenciadorDeMenus, scanner);
                 break;
             case SAIR:
+                gerenciadorDeMenus.deslogarUsuario();
                 gerenciadorDeMenus.voltar();
                 break;
             default:
                 System.out.println("Opção inválida. Tente novamente.");
         }
     }
-
-    
 }

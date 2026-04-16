@@ -23,7 +23,7 @@ public class ControleNovoCurso {
     }
 
     public Curso processarNovoCurso(Usuario usuarioLogado, Scanner scanner) {
-        System.out.println("Digite o nome do curso: ");
+        System.out.print("Digite o nome do curso: ");
         String nome = scanner.nextLine();
 
         System.out.println("Digite a descrição do curso: ");
@@ -31,7 +31,7 @@ public class ControleNovoCurso {
 
         Date dataInicio = null;
         do {
-            System.out.println("Digite a data de início do curso (formato: dd/MM/yyyy): ");
+            System.out.print("Digite a data de início do curso (formato: dd/MM/yyyy): ");
             String dataInicioString = scanner.nextLine();
             try {
                 dataInicio = new SimpleDateFormat("dd/MM/yyyy").parse(dataInicioString);

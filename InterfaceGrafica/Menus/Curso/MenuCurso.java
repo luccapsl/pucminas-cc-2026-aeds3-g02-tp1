@@ -20,7 +20,7 @@ public class MenuCurso implements IMenu {
 
     @Override
     public void show(GerenciadorDeMenus gerenciadorDeMenus, Scanner scanner) {
-        System.out.println(this.curso);
+        System.out.println(this.curso.toStringSafe());
 
         OpcaoCurso opcaoCurso = MenuUtils.interacaoMenu(OpcaoCurso.class, scanner);
         

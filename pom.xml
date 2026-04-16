@@ -34,7 +34,6 @@
         </repository>
     </repositories>
     <build>
-        <mainClass>Main</mainClass>
         <sourceDirectory>.</sourceDirectory> 
         <testSourceDirectory>.</testSourceDirectory>
         
@@ -71,6 +70,28 @@
                         <exclude>target/**</exclude>
                         <exclude>.*/**</exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <mainClass>Main</mainClass>
                 </configuration>
             </plugin>
         </plugins>

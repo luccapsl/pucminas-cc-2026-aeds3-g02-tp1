@@ -29,6 +29,7 @@ public class GerenciadorDeMenus {
         System.out.println("-".repeat(header.length()));
 
     }
+
     private void imprimirBreadcumber() {
         StringJoiner breadcrumb = new StringJoiner(" > ");
 
@@ -41,9 +42,9 @@ public class GerenciadorDeMenus {
     }
 
     public void iniciar(Scanner scanner) {
-        while(!pilhaDeMenus.isEmpty()) {
+        while (!pilhaDeMenus.isEmpty()) {
             // Limpar a tela (funciona na maioria dos terminais, mas pode variar)
-            // System.out.print("\033[H\033[2J");
+            System.out.print("\033[H\033[2J");
             imprimirHeader();
             imprimirBreadcumber();
 
@@ -59,12 +60,13 @@ public class GerenciadorDeMenus {
     }
 
     public void voltar() {
-        if(!pilhaDeMenus.isEmpty()) {
+        if (!pilhaDeMenus.isEmpty()) {
             pilhaDeMenus.pop();
         }
     }
+
     public void trocarTelaAtual(IMenu novoMenu) {
-        if(!pilhaDeMenus.isEmpty()) {
+        if (!pilhaDeMenus.isEmpty()) {
             pilhaDeMenus.pop();
         }
         pilhaDeMenus.push(novoMenu);
@@ -76,5 +78,9 @@ public class GerenciadorDeMenus {
 
     public Usuario getUsuarioLogado() {
         return this.usuarioLogado;
+    }
+
+    public void deslogarUsuario() {
+        this.usuarioLogado = null;
     }
 }
