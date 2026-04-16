@@ -21,7 +21,7 @@ public class MenuGerenciarInscritos implements IMenu {
         System.out.println();
 
         OpcaoGerenciarInscritos opcao = MenuUtils.interacaoMenu(OpcaoGerenciarInscritos.class, scanner);
-
+        if (opcao == null) return;
         switch (opcao) {
             case RETORNAR:
                 gerenciadorDeMenus.voltar();

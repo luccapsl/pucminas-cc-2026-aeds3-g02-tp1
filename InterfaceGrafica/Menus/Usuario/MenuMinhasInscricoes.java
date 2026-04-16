@@ -24,7 +24,7 @@ public class MenuMinhasInscricoes implements IMenu {
     public void show(GerenciadorDeMenus gerenciadorDeMenus, Scanner scanner) {
         this.controleMinhasInscricoes.exibirMinhasInscricoes(gerenciadorDeMenus.getUsuarioLogado());
         OpcaoMinhasInscricoes opcaoMinhasInscricoes = MenuUtils.interacaoMenu(OpcaoMinhasInscricoes.class, scanner);
-
+        if (opcaoMinhasInscricoes == null) return;
         switch (opcaoMinhasInscricoes) {
             case RETORNAR:
                 gerenciadorDeMenus.voltar();

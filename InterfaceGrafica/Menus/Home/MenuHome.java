@@ -23,7 +23,7 @@ public class MenuHome implements IMenu {
     public void show(GerenciadorDeMenus gerenciadorDeMenus, Scanner scanner) {
 
         OpcaoHome opcaoHome = MenuUtils.interacaoMenu(OpcaoHome.class, scanner);
-
+        if (opcaoHome == null) return;
         switch (opcaoHome) {
             case MEUS_DADOS:
                 controleHome.meusDados(gerenciadorDeMenus, scanner);

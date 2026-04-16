@@ -33,7 +33,14 @@ public class MenuMeusCursos implements IMenu {
         String opcao = scanner.nextLine();
         OpcaoMeusCursos opcaoSelecionada = MenuUtils.interpretar(opcao, OpcaoMeusCursos.class);
         if (opcaoSelecionada == null) {
-            this.controleMeusCursos.handleEscolhaCurso(Integer.parseInt(opcao), cursosDoUsuario, gerenciadorDeMenus);
+            int opcaoIndex;
+            try {
+                opcaoIndex = Integer.parseInt(opcao);
+            } catch (NumberFormatException e) {
+                System.out.println("Opção inválida. Tente novamente.");
+                return;
+            }
+            this.controleMeusCursos.handleEscolhaCurso(opcaoIndex, cursosDoUsuario, gerenciadorDeMenus);
         }else {
             switch (opcaoSelecionada) {
                 case NOVO_CURSO:

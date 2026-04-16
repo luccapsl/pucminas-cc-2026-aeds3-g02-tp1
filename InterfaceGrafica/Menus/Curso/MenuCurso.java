@@ -23,7 +23,7 @@ public class MenuCurso implements IMenu {
         System.out.println(this.curso.toStringSafe());
 
         OpcaoCurso opcaoCurso = MenuUtils.interacaoMenu(OpcaoCurso.class, scanner);
-        
+        if (opcaoCurso == null) return;
         switch (opcaoCurso) {
             case GERENCIAR_INSCRITOS:
                 controleCurso.gerenciarInscritos(gerenciadorDeMenus, scanner);

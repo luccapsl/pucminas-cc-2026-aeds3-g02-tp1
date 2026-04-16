@@ -28,7 +28,7 @@ public class MenuAlterarCurso implements IMenu {
         this.controleAlterarCurso.exibirDadosCurso(this.curso);
 
         OpcaoAlterarCurso opcao = MenuUtils.interacaoMenu(OpcaoAlterarCurso.class, scanner);
-
+        if (opcao == null) return;
         switch (opcao) {
             case ALTERAR_NOME:
                 controleAlterarCurso.alterarNome(gerenciadorDeMenus, scanner, this.curso);

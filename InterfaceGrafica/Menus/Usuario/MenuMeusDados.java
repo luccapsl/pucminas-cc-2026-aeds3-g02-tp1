@@ -25,7 +25,7 @@ public class MenuMeusDados implements IMenu {
         this.controleMeusDados.exibirDadosUsuario(gerenciadorDeMenus.getUsuarioLogado());
 
         OpcaoMeusDados opcaoMeusDados = MenuUtils.interacaoMenu(OpcaoMeusDados.class, scanner);
-
+        if (opcaoMeusDados == null) return;
         switch (opcaoMeusDados) {
             case ALTERAR_NOME:
                 controleMeusDados.alterarNome(gerenciadorDeMenus, scanner);

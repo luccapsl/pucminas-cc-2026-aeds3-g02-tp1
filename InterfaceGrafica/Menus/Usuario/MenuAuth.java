@@ -22,7 +22,7 @@ public class MenuAuth implements IMenu {
     public void show(GerenciadorDeMenus gerenciadorDeMenus, Scanner scanner) {
 
         OpcaoAuth opcaoAuth = MenuUtils.interacaoMenu(OpcaoAuth.class, scanner);
-        
+        if (opcaoAuth == null) return;
         switch (opcaoAuth) {
             case LOGIN:
                 controleAuth.login(gerenciadorDeMenus, scanner);
