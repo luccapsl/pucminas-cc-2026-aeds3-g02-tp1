@@ -26,3 +26,6 @@ bin/
 
 .vscode
 target
+
+# archive folder
+dados/
