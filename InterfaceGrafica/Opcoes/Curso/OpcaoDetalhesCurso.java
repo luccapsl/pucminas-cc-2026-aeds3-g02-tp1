@@ -1,17 +1,15 @@
-package InterfaceGrafica.Opcoes.Usuario;
+package InterfaceGrafica.Opcoes.Curso;
 
 import InterfaceGrafica.Opcoes.IOpcaoMenu;
 
-public enum OpcaoMinhasInscricoes implements IOpcaoMenu {
-    BUSCAR("A", "Buscar curso por código"),
-    //BUSCAR_PALAVRAS_CHAVE("B", "Buscar curso por palavras-chave"), 
-    LISTAR_CURSOS("C", "Listar todos os cursos"),
+public enum OpcaoDetalhesCurso implements IOpcaoMenu {
+    INSCRICAO("A", "Fazer minha inscrição no curso"),
     RETORNAR("R", "Retornar ao menu anterior");
 
     private final String codigo;
     private final String descricao;
 
-    OpcaoMinhasInscricoes(String codigo, String descricao) {
+    OpcaoDetalhesCurso(String codigo, String descricao) {
         this.codigo = codigo;
         this.descricao = descricao;
     }

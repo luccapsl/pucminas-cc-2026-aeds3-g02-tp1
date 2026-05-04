@@ -1,4 +1,4 @@
-# MyCursos — TP1 · AEDS III · Grupo 02 · PUC Minas 2026
+# MyCursos — TP2 · AEDS III · Grupo 02 · PUC Minas 2026
 
 ## Participantes
 
@@ -18,7 +18,11 @@ Prof. Dr. Marcos André Silveira Kutova
 
 ## Descrição do Sistema
 
-O **MyCursos** é um sistema de gestão de inscrições em cursos livres desenvolvido como Trabalho Prático 1 da disciplina **Algoritmos e Estruturas de Dados III (AEDS III)** do curso de Ciência da Computação da PUC Minas. Neste TP1, implementamos o cadastro e gerenciamento de **usuários** e **cursos**, com autenticação por email/senha, relacionamento 1:N entre usuários e cursos e gerenciamento completo de estados de curso.
+O **MyCursos** é um sistema de gestão de inscrições em cursos livres desenvolvido como Trabalho Prático da disciplina **Algoritmos e Estruturas de Dados III (AEDS III)** do curso de Ciência da Computação da PUC Minas.
+
+O **TP1** implementou o cadastro e gerenciamento de **usuários** e **cursos**, com autenticação por email/senha, relacionamento 1:N entre usuários e cursos e gerenciamento completo de estados de curso.
+
+O **TP2** acrescenta a **busca e listagem de cursos** com paginação, a **tela de detalhes do curso** (visão do aluno), o relacionamento **N:N** entre usuários e cursos por meio de uma entidade de associação `CursoUsuario` com duas Árvores B+ de índice, e o gerenciamento completo de inscrições (incluindo a visão do proponente sobre seus inscritos).
 
 O sistema roda em modo texto (terminal) e se baseia no padrão **MVC**, com separação entre entidades de dados (`Entidades`), operações de persistência (`CRUD`), menus de interface (`Menus`) e lógica de negócio (`Controles`). A navegação usa uma pilha de menus com **breadcrumb** automático exibido em cada tela.
 
@@ -45,6 +49,18 @@ O sistema roda em modo texto (terminal) e se baseia no padrão **MVC**, com sepa
 ### Tela de Novo Curso
 
 ![Tela de novo curso](screenshots/tela-novo-curso.png)
+
+### Tela de Minhas Inscrições (TP2)
+
+Menu principal de inscrições. Permite buscar um curso pelo código NanoID (opção A), listar todos os cursos paginados por data de início (opção C) ou visualizar os cursos em que o usuário já está inscrito.
+
+### Tela de Lista de Cursos (TP2)
+
+Lista paginada de 10 cursos por página, ordenada por data de início. Itens numerados de `(1)` a `(9)` e `(0)` para o décimo. Navegação entre páginas com `(A)` e `(B)`.
+
+### Tela de Detalhes do Curso (TP2)
+
+Exibe código NanoID, nome, autor (nome do usuário criador), descrição e data de início formatada. Oferece a opção de realizar a inscrição no curso.
 
 ---
 
@@ -91,12 +107,14 @@ pucminas-cc-2026-ti3-g02-tp1/
     │   │   ├── MenuCadastro.java                # Formulário de cadastro
     │   │   ├── MenuMeusDados.java               # Perfil do usuário
     │   │   ├── MenuMeusCursos.java              # Listagem de cursos do usuário
-    │   │   └── MenuMinhasInscricoes.java        # Inscrições (reservado para TP2)
+    │   │   └── MenuMinhasInscricoes.java        # Busca, listagem e inscrições (TP2)
     │   └── Curso/
-    │       ├── MenuCurso.java                   # Detalhes e ações sobre um curso
+    │       ├── MenuCurso.java                   # Detalhes e ações sobre um curso (visão do dono)
     │       ├── MenuNovoCurso.java               # Formulário de criação de curso
     │       ├── MenuAlterarCurso.java            # Formulário de edição de curso
-    │       └── MenuGerenciarInscritos.java      # Gerenciar inscritos (reservado para TP2)
+    │       ├── MenuGerenciarInscritos.java      # Gerenciar inscritos (TP2)
+│       ├── MenuListaCursos.java             # Lista paginada de todos os cursos (TP2)
+│       └── MenuDetalhesCurso.java           # Detalhes do curso — visão do aluno (TP2)
     ├── Controles/
     │   ├── Home/
     │   │   └── ControleHome.java               # Lógica do menu principal
@@ -106,7 +124,7 @@ pucminas-cc-2026-ti3-g02-tp1/
     │   │   ├── ControleCadastro.java           # Cadastro com validação de email único
     │   │   ├── ControleMeusDados.java          # Edição de perfil (nome, email, senha)
     │   │   ├── ControleMeusCursos.java         # Listagem e seleção de cursos
-    │   │   └── ControleMinhasInscricoes.java   # Inscrições (reservado para TP2)
+    │   │   └── ControleMinhasInscricoes.java   # Busca por código, listagem e inscrições (TP2)
     │   └── Curso/
     │       ├── ControleCurso.java              # Ações sobre curso (estado + navegação)
     │       ├── ControleNovoCurso.java          # Criação de curso
@@ -118,11 +136,13 @@ pucminas-cc-2026-ti3-g02-tp1/
         │   ├── OpcaoAuth.java
         │   ├── OpcaoMeusCursos.java
         │   ├── OpcaoMeusDados.java
-        │   └── OpcaoMinhasInscricoes.java
+        │   └── OpcaoMinhasInscricoes.java      # Atualizado: buscar (A) e listar (C) (TP2)
         └── Curso/
             ├── OpcaoCurso.java
             ├── OpcaoAlterarCurso.java
-            └── OpcaoGerenciarInscritos.java
+            ├── OpcaoGerenciarInscritos.java
+            ├── OpcaoListaCurso.java             # Opções de paginação (TP2)
+            └── OpcaoDetalhesCurso.java          # Opções da tela de detalhes do aluno (TP2)
 ```
 
 ---
@@ -186,7 +206,14 @@ pucminas-cc-2026-ti3-g02-tp1/
 - **Encerrar inscrições**: exige confirmação, define estado `'1'` e atualiza via `CrudCurso.update()`.
 - **Concluir curso**: exige confirmação, define estado `'2'` e atualiza.
 - **Cancelar curso**: exibe aviso "Esta ação não pode ser desfeita!", exige confirmação e define estado `'3'`.
-- **Gerenciar inscritos**: exibe "EM BREVE." — reservado para o TP2.
+- **Gerenciar inscritos**: navega para `MenuGerenciarInscritos` (TP2).
+
+### Busca e Listagem de Cursos (TP2)
+
+- **Buscar por código NanoID** (`ControleMinhasInscricoes.buscarPorCodigo`): o usuário informa o código de 10 caracteres. O sistema consulta o índice `HashExtensivel<ParCodigoID>` via `CrudCurso.read(String codigo)` e abre diretamente a tela de detalhes do curso, sem exibir lista intermediária.
+- **Listar todos os cursos** (`CrudCurso.listarCursosOrdenadoDataInicio`): recupera todos os registros ativos do arquivo via `Arquivo.readAll()` (varredura sequencial do `RandomAccessFile`, pulando registros com lápide `'*'`) e ordena por data de início com `Comparator.comparing(Curso::getDataInicio)`.
+- **Paginação** (`MenuListaCursos`): exibe 10 cursos por página. Teclas `(1)` a `(9)` selecionam o 1º ao 9º item; tecla `(0)` seleciona o 10º (fórmula: `tecla = (posNaPagina + 1) % 10`). Navegação com `(A)` página anterior e `(B)` próxima página.
+- **Detalhes do curso** (`MenuDetalhesCurso`): exibe código NanoID (`getCodigo()`), nome, autor (nome do usuário criador, obtido via `CrudUsuario.read(idUsuario)` e armazenado no campo transiente `autor` de `Curso`), descrição e data de início formatada (`SimpleDateFormat("dd/MM/yyyy")`). Oferece a opção `(A) Fazer minha inscrição no curso`.
 
 ---
 
@@ -268,36 +295,35 @@ java -jar target/pucminas-cc-2026-ti3-g02-tp1-1.0.0.jar
 
 ---
 
-## Checklist
+## Checklist — TP2
 
+**1. Há um CRUD da entidade de associação CursoUsuario (que estende a classe ArquivoIndexado, acrescentando Tabelas Hash Extensíveis e Árvores B+ como índices diretos e indiretos conforme necessidade) que funciona corretamente?**
 
-**1. Há um CRUD de usuários (que estende a classe ArquivoIndexado, acrescentando Tabelas Hash Extensíveis e Árvores B+ como índices diretos e indiretos conforme necessidade) que funciona corretamente?**
+**Em andamento.** A entidade `CursoUsuario` e seu CRUD com as duas Árvores B+ de índice (`(idCurso, idCursoUsuario)` e `(idUsuario, idCursoUsuario)`) estão sendo implementados por outro integrante do grupo como parte do TP2.
 
-**Sim.** 
+**2. A visão de inscrições está corretamente implementada e permite consultas aos cursos em que um usuário está inscrito?**
 
-**2. Há um CRUD de cursos (que estende a classe ArquivoIndexado, acrescentando Tabelas Hash Extensíveis e Árvores B+ como índices diretos e indiretos conforme necessidade) que funciona corretamente?**
+**Parcialmente.** A tela `MenuMinhasInscricoes` já exibe as opções de busca por código (A) e listagem completa (C). A seção de inscrições ativas do usuário (`exibirMinhasInscricoes`) aguarda a conclusão do CRUD de `CursoUsuario`.
 
-**Sim.** 
+**3. A visão de cursos funciona corretamente e permite a gestão dos usuários inscritos em um curso?**
 
-**3. Os cursos estão vinculados aos usuários usando o idUsuario como chave estrangeira?**
+**Em andamento.** A tela `MenuGerenciarInscritos` (acessível via `Meus Cursos → curso → Gerenciar inscritos`) está sendo implementada por outro integrante.
 
-**Sim.** 
+**4. Há uma visualização dos cursos de outras pessoas por meio de um código NanoID?**
 
-**4. Há uma árvore B+ que registre o relacionamento 1:N entre usuários e cursos?**
+**Sim.** O usuário acessa `Minhas Inscrições → (A) Buscar curso por código`, informa o NanoID de 10 caracteres e o sistema abre diretamente a tela `MenuDetalhesCurso` com todos os dados do curso (código, nome, autor, descrição, data de início).
 
-**Sim.** 
+**5. A integridade do relacionamento entre cursos e usuários está mantida em todas as operações?**
 
-**5. Há um CRUD de usuários (que estende a classe ArquivoIndexado, acrescentando Tabelas Hash Extensíveis e Árvores B+ como índices diretos e indiretos conforme necessidade)?**
-
-**Sim.** 
+**Sim** para as operações já implementadas. O `CrudCurso.update()` sincroniza todos os índices afetados ao alterar nome, código ou `idUsuario`. A integridade do relacionamento N:N (inscrições) será garantida pelo CRUD de `CursoUsuario`.
 
 **6. O trabalho compila corretamente?**
 
-**Sim.** `mvn clean compile` conclui sem erros. A única dependência externa é `jnanoid-enhanced` (via JitPack), declarada no `pom.xml`.
+**Sim.** `mvn clean compile` conclui sem erros.
 
 **7. O trabalho está completo e funcionando sem erros de execução?**
 
-**Sim, com ressalvas.** Autenticação, cadastro, gerenciamento de dados do usuário, criação e listagem de cursos, edição de dados do curso e todas as mudanças de estado (encerrar inscrições, concluir, cancelar) estão implementados. A opção "Gerenciar inscritos" exibe "EM BREVE." (conforme especificado, essa funcionalidade fica para o TP2). A verificação que impede excluir um usuário com cursos ativos vinculados, bem como a lógica que exclui ou cancela um curso com base na existência de inscritos, não foram implementadas (dependem do sistema de inscrições do TP2).
+**Sim, com ressalvas.** Todas as funcionalidades de busca e listagem de cursos (TP2) estão implementadas e funcionando: busca por NanoID, listagem paginada por data, tela de detalhes com autor. As funcionalidades de inscrição em si (criar/cancelar inscrição, listar inscritos) dependem do CRUD de `CursoUsuario`, ainda em desenvolvimento por outro integrante.
 
 **8. O trabalho é original e não a cópia de um trabalho de outro grupo?**
 

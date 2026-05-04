@@ -26,6 +26,20 @@ public class MenuMinhasInscricoes implements IMenu {
         OpcaoMinhasInscricoes opcaoMinhasInscricoes = MenuUtils.interacaoMenu(OpcaoMinhasInscricoes.class, scanner);
         if (opcaoMinhasInscricoes == null) return;
         switch (opcaoMinhasInscricoes) {
+            case BUSCAR:
+                try {
+                    controleMinhasInscricoes.buscarPorCodigo(scanner, gerenciadorDeMenus);
+                } catch (Exception e) {
+                    System.out.println("Erro ao buscar curso: " + e.getMessage());
+                }
+                break;
+            case LISTAR_CURSOS:
+                try {
+                    controleMinhasInscricoes.listarTodosCursos(gerenciadorDeMenus);
+                } catch (Exception e) {
+                    System.out.println("Erro ao listar cursos: " + e.getMessage());
+                }
+                break;
             case RETORNAR:
                 gerenciadorDeMenus.voltar();
                 break;

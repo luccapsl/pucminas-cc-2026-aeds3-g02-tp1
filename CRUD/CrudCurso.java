@@ -2,6 +2,7 @@ package CRUD;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -98,6 +99,7 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
                 .collect(Collectors.toList());
         return new ArrayList<>(list);
     }
+    
 
     /**
      * 
@@ -115,6 +117,31 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
                     }
                 })
                 .filter(c -> c != null)
+                .collect(Collectors.toList());
+        return new ArrayList<>(list);
+    }
+
+    /**
+     * 
+     * Lista cursos de um usuario ordenados por dataInicio
+     * 
+     */
+    public ArrayList<Curso> listarCursosUsuarioOrdenadoDataInicio(int idUsuario) throws Exception {
+        List<Curso> list = super.readAll().stream()
+                .filter(c -> c.getIdUsuario() == idUsuario)
+                .sorted(Comparator.comparing(Curso::getDataInicio))
+                .collect(Collectors.toList());
+        return new ArrayList<>(list);
+    }
+
+    /**
+     * 
+     * Lista cursos ordenados por dataInicio
+     * 
+     */
+    public ArrayList<Curso> listarCursosOrdenadoDataInicio() throws Exception {
+        List<Curso> list = super.readAll().stream()
+                .sorted(Comparator.comparing(Curso::getDataInicio))
                 .collect(Collectors.toList());
         return new ArrayList<>(list);
     }

@@ -20,6 +20,7 @@ public class Curso implements Registro {
     protected int idUsuario;
     protected Date dataInicio;
     protected String descricao;
+    protected String autor;
     /**
      * 
      * Construtor vazio para Arquivo.java
@@ -32,6 +33,7 @@ public class Curso implements Registro {
         this.idUsuario = -1;
         this.dataInicio = new Date();
         this.descricao = "";
+        this.autor = "";
     }
 
     /**
@@ -51,6 +53,8 @@ public class Curso implements Registro {
         this.setDataInicio(dataInicio);
 
         this.descricao = descricao;
+
+        this.autor = "";
     }
 
     /**
@@ -166,11 +170,23 @@ public class Curso implements Registro {
         return nome;
     }
 
+    public String getAutor() {
+        return this.autor;
+    }
+
     public void setNome(String nome) {
         if (nome == null || nome.trim().isEmpty()) {
             throw new IllegalArgumentException("[ERRO] - Nome está vazio.");
         } else {
             this.nome = nome;
+        }
+    }
+
+    public void setAutor(String autor) {
+        if (autor == null || autor.trim().isEmpty()) {
+            throw new IllegalArgumentException("[ERRO] - Autor está vazio.");
+        } else {
+            this.autor = autor;
         }
     }
 

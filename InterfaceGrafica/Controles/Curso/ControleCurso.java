@@ -28,6 +28,10 @@ public class ControleCurso {
         gerenciadorDeMenus.irPara(new MenuAlterarCurso(curso));
     }
 
+    public void fazerInscricao(GerenciadorDeMenus gerenciadorDeMenus, Scanner scanner, Curso curso) {
+        System.out.println("Inscrição realizada com sucesso no curso \"" + curso.getNome() + "\".");
+    }
+
     public void encerrarInscricoes(GerenciadorDeMenus gerenciadorDeMenus, Scanner scanner, Curso curso) {
         System.out.println("Tem certeza que deseja encerrar as inscrições do curso \"" + curso.getNome() + "\"?");
         System.out.print("(S) Sim / (N) Não: ");

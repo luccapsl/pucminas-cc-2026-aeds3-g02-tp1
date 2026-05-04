@@ -3,6 +3,7 @@ package Genericos;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 
 public class Arquivo<T extends Registro> {
     final int TAM_CABECALHO = 12;
@@ -88,6 +89,35 @@ public class Arquivo<T extends Registro> {
         }
         return null;
     }
+
+    public ArrayList<T> readAll() throws Exception {
+        T obj;
+        short tam;
+        byte[] b;
+        byte lapide;
+
+        ArrayList<T> lista = new ArrayList<>();
+
+        arquivo.seek(TAM_CABECALHO);
+        while (arquivo.getFilePointer() < arquivo.length()) {
+            lapide = arquivo.readByte();
+            tam = arquivo.readShort();
+            if (lapide == ' ') {
+                b = new byte[tam];
+                arquivo.read(b);
+                obj = construtor.newInstance();
+                obj.fromByteArray(b);
+                lista.add(obj);
+            } else {
+                // pula o registro marcado para exclusao
+                arquivo.skipBytes(tam);
+            }
+        }
+
+        return lista;
+
+    }
+
 
     public boolean delete(int id) throws Exception {
         T obj;
