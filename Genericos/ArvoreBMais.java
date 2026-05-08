@@ -182,7 +182,9 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
         // Chave encontrada (ou pelo menos o ponto onde ela deveria estar).
         // Segundo passo - testa se a chave é a chave buscada e se está em uma folha
         // Obs.: em uma árvore B+, todas as chaves válidas estão nas folhas
-        if (i < pa.elementos.size() && pa.filhos.get(0) == -1) {
+        if (pa.filhos.get(0) == -1) {
+            // Estamos em uma folha
+            if (i < pa.elementos.size()) {
             // Verifica se é uma busca exata ou por prefixo (primeira chave igual)
             boolean exactMatch = (elem != null && elem.compareTo(pa.elementos.get(i)) == 0);
             boolean prefixMatch = false;
@@ -206,6 +208,20 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
                             e.getIdCurso() == Integer.MIN_VALUE) {
                         prefixMatch = true;
                     }
+                } else if (elem instanceof ParIdCursoIdCursoUsuario) {
+                    ParIdCursoIdCursoUsuario e = (ParIdCursoIdCursoUsuario) elem;
+                    ParIdCursoIdCursoUsuario atual = (ParIdCursoIdCursoUsuario) pa.elementos.get(i);
+                    if (e.getIdCurso() == atual.getIdCurso() &&
+                            e.getIdCursoUsuario() == Integer.MIN_VALUE) {
+                        prefixMatch = true;
+                    }
+                } else if (elem instanceof ParIdUsuarioIdCursoUsuario) {
+                    ParIdUsuarioIdCursoUsuario e = (ParIdUsuarioIdCursoUsuario) elem;
+                    ParIdUsuarioIdCursoUsuario atual = (ParIdUsuarioIdCursoUsuario) pa.elementos.get(i);
+                    if (e.getIdUsuario() == atual.getIdUsuario() &&
+                            e.getIdCursoUsuario() == Integer.MIN_VALUE) {
+                        prefixMatch = true;
+                    }
                 }
             }
 
@@ -226,6 +242,16 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
                         } else if (elem instanceof ParIdUsuarioIdCurso) {
                             ParIdUsuarioIdCurso e = (ParIdUsuarioIdCurso) elem;
                             ParIdUsuarioIdCurso a = (ParIdUsuarioIdCurso) atual;
+                            if (e.getIdUsuario() != a.getIdUsuario())
+                                break;
+                        } else if (elem instanceof ParIdCursoIdCursoUsuario) {
+                            ParIdCursoIdCursoUsuario e = (ParIdCursoIdCursoUsuario) elem;
+                            ParIdCursoIdCursoUsuario a = (ParIdCursoIdCursoUsuario) atual;
+                            if (e.getIdCurso() != a.getIdCurso())
+                                break;
+                        } else if (elem instanceof ParIdUsuarioIdCursoUsuario) {
+                            ParIdUsuarioIdCursoUsuario e = (ParIdUsuarioIdCursoUsuario) elem;
+                            ParIdUsuarioIdCursoUsuario a = (ParIdUsuarioIdCursoUsuario) atual;
                             if (e.getIdUsuario() != a.getIdUsuario())
                                 break;
                         }
@@ -259,6 +285,16 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
                                     ParIdUsuarioIdCurso p = (ParIdUsuarioIdCurso) primeiro;
                                     if (e.getIdUsuario() != p.getIdUsuario())
                                         break;
+                                } else if (elem instanceof ParIdCursoIdCursoUsuario) {
+                                    ParIdCursoIdCursoUsuario e = (ParIdCursoIdCursoUsuario) elem;
+                                    ParIdCursoIdCursoUsuario p = (ParIdCursoIdCursoUsuario) primeiro;
+                                    if (e.getIdCurso() != p.getIdCurso())
+                                        break;
+                                } else if (elem instanceof ParIdUsuarioIdCursoUsuario) {
+                                    ParIdUsuarioIdCursoUsuario e = (ParIdUsuarioIdCursoUsuario) elem;
+                                    ParIdUsuarioIdCursoUsuario p = (ParIdUsuarioIdCursoUsuario) primeiro;
+                                    if (e.getIdUsuario() != p.getIdUsuario())
+                                        break;
                                 }
                             } else {
                                 if (elem.compareTo(primeiro) != 0)
@@ -269,6 +305,33 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
                 }
                 return lista;
             }
+            }
+
+            // Estamos na folha mas i >= tamanho OU nenhum match encontrado.
+            // Para busca por prefixo, os registros podem estar na próxima folha.
+            if (pa.proxima != -1 && elem != null) {
+                boolean isPrefixSearch = false;
+                if (elem instanceof ParUsuarioNomeCursoId) {
+                    ParUsuarioNomeCursoId e = (ParUsuarioNomeCursoId) elem;
+                    isPrefixSearch = e.getNomeCurso().isEmpty() && e.getIdCurso() == Integer.MIN_VALUE;
+                } else if (elem instanceof ParIdUsuarioIdCurso) {
+                    ParIdUsuarioIdCurso e = (ParIdUsuarioIdCurso) elem;
+                    isPrefixSearch = e.getIdCurso() == Integer.MIN_VALUE;
+                } else if (elem instanceof ParIdCursoIdCursoUsuario) {
+                    ParIdCursoIdCursoUsuario e = (ParIdCursoIdCursoUsuario) elem;
+                    isPrefixSearch = e.getIdCursoUsuario() == Integer.MIN_VALUE;
+                } else if (elem instanceof ParIdUsuarioIdCursoUsuario) {
+                    ParIdUsuarioIdCursoUsuario e = (ParIdUsuarioIdCursoUsuario) elem;
+                    isPrefixSearch = e.getIdCursoUsuario() == Integer.MIN_VALUE;
+                }
+
+                if (isPrefixSearch) {
+                    // Avança para a próxima folha e tenta a busca por prefixo nela
+                    return read1(elem, pa.proxima);
+                }
+            }
+
+            return new ArrayList<>();
         }
 
         // Chave ainda não foi encontrada, continua a busca recursiva pela árvore
