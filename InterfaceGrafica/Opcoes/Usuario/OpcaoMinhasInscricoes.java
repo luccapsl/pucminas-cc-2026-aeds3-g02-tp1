@@ -6,7 +6,9 @@ public enum OpcaoMinhasInscricoes implements IOpcaoMenu {
     BUSCAR("A", "Buscar curso por código"),
     //BUSCAR_PALAVRAS_CHAVE("B", "Buscar curso por palavras-chave"), 
     LISTAR_CURSOS("C", "Listar todos os cursos"),
-    RETORNAR("R", "Retornar ao menu anterior");
+    INSCREVER("I", "Inscrever-se em um novo curso"),
+    RETORNAR("R", "Retornar ao menu anterior"),
+    CANCELAR("X", "Cancelar uma inscrição");
 
     private final String codigo;
     private final String descricao;

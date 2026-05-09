@@ -77,6 +77,13 @@ public class Curso implements Registro {
         ByteArrayInputStream bais = new ByteArrayInputStream(ba);
         DataInputStream dis = new DataInputStream(bais);
 
+        /*
+        aeds - encerrado - 1
+        diw - concluido - 0
+        lip - cancelado - 2
+        ti - ativo - 3
+        */
+
         this.idCurso = dis.readInt();
         this.nome = dis.readUTF();
         this.codigo = dis.readUTF();
