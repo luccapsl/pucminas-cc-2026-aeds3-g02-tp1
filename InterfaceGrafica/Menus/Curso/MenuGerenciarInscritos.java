@@ -16,16 +16,28 @@ public class MenuGerenciarInscritos implements IMenu {
 
     @Override
     public void show(GerenciadorDeMenus gerenciadorDeMenus, Scanner scanner) {
+
         System.out.println("GERENCIAR INSCRITOS:");
-        System.out.println("EM BREVE.");
         System.out.println();
 
-        OpcaoGerenciarInscritos opcao = MenuUtils.interacaoMenu(OpcaoGerenciarInscritos.class, scanner);
+        OpcaoGerenciarInscritos opcao =
+                MenuUtils.interacaoMenu(OpcaoGerenciarInscritos.class, scanner);
+
         if (opcao == null) return;
+
         switch (opcao) {
+
+            case EXPORTAR_INSCRITOS:
+                System.out.println("Exportando inscritos...");
+                
+                // implementar lógica de exportação aqui
+                
+                break;
+
             case RETORNAR:
                 gerenciadorDeMenus.voltar();
                 break;
+
             default:
                 System.out.println("Opção inválida. Tente novamente.");
         }

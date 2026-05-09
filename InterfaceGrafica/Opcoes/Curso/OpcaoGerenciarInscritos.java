@@ -3,6 +3,8 @@ package InterfaceGrafica.Opcoes.Curso;
 import InterfaceGrafica.Opcoes.IOpcaoMenu;
 
 public enum OpcaoGerenciarInscritos implements IOpcaoMenu {
+
+    EXPORTAR_INSCRITOS("E", "Exportar inscritos"),
     RETORNAR("R", "Retornar ao menu anterior");
 
     private final String codigo;
