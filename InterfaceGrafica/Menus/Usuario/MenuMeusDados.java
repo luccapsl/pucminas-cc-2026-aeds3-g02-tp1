@@ -36,6 +36,9 @@ public class MenuMeusDados implements IMenu {
             case ALTERAR_SENHA:
                 controleMeusDados.alterarSenha(gerenciadorDeMenus, scanner);
                 break;
+            case EXCLUIR_CONTA:
+                controleMeusDados.excluirConta(gerenciadorDeMenus, scanner);
+                break;
             case RETORNAR:
                 gerenciadorDeMenus.voltar();
                 break;

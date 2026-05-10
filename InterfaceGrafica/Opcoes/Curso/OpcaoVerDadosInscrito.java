@@ -1,18 +1,16 @@
-package InterfaceGrafica.Opcoes.Usuario;
+package InterfaceGrafica.Opcoes.Curso;
 
 import InterfaceGrafica.Opcoes.IOpcaoMenu;
 
-public enum OpcaoMeusDados implements IOpcaoMenu {
-    ALTERAR_NOME("A", "Alterar nome"),
-    ALTERAR_EMAIL("B", "Alterar email"),
-    ALTERAR_SENHA("C", "Alterar senha"),
-    EXCLUIR_CONTA("D", "Excluir conta"),
+public enum OpcaoVerDadosInscrito implements IOpcaoMenu {
+
+    CANCELAR_INSCRICAO("C", "Cancelar inscrição do aluno"),
     RETORNAR("R", "Retornar ao menu anterior");
 
     private final String codigo;
     private final String descricao;
 
-    OpcaoMeusDados(String codigo, String descricao) {
+    OpcaoVerDadosInscrito(String codigo, String descricao) {
         this.codigo = codigo;
         this.descricao = descricao;
     }

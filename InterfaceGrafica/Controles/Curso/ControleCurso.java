@@ -20,8 +20,8 @@ public class ControleCurso {
         }
     }
 
-    public void gerenciarInscritos(GerenciadorDeMenus gerenciadorDeMenus, Scanner scanner) {
-        gerenciadorDeMenus.irPara(new MenuGerenciarInscritos());
+    public void gerenciarInscritos(GerenciadorDeMenus gerenciadorDeMenus, Scanner scanner, Curso curso) {
+        gerenciadorDeMenus.irPara(new MenuGerenciarInscritos(curso));
     }
 
     public void corrigirDados(GerenciadorDeMenus gerenciadorDeMenus, Scanner scanner, Curso curso) {
@@ -78,6 +78,24 @@ public class ControleCurso {
                 System.out.println("Curso cancelado com sucesso!");
             } catch (Exception e) {
                 System.out.println("Erro ao cancelar curso: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Operação cancelada.");
+        }
+    }
+
+    public void excluirCurso(GerenciadorDeMenus gerenciadorDeMenus, Scanner scanner, Curso curso) {
+        System.out.println("Tem certeza que deseja EXCLUIR DEFINITIVAMENTE o curso \"" + curso.getNome() + "\"?");
+        System.out.println("ATENÇÃO: Todos os inscritos e dados do curso serão perdidos!");
+        System.out.print("(S) Sim / (N) Não: ");
+        String confirmacao = scanner.nextLine();
+        if (confirmacao.equalsIgnoreCase("S")) {
+            try {
+                crudCurso.delete(curso.getId());
+                System.out.println("Curso excluído com sucesso!");
+                gerenciadorDeMenus.voltar();
+            } catch (Exception e) {
+                System.out.println("Erro ao excluir curso: " + e.getMessage());
             }
         } else {
             System.out.println("Operação cancelada.");

@@ -138,6 +138,14 @@ public class ControleMinhasInscricoes {
 
     public void efetivarInscricao(int idCurso, Usuario usuarioLogado){
         try {
+            ArrayList<CursoUsuario> inscricoesUsuario = crudCursoUsuario.readAllByUsuario(usuarioLogado.getId());
+            for (CursoUsuario cu : inscricoesUsuario) {
+                if (cu.getIdCurso() == idCurso) {
+                    System.out.println("Você já está inscrito neste curso.");
+                    return;
+                }
+            }
+
             CursoUsuario novaInscricao = new CursoUsuario(idCurso, usuarioLogado.getId(), new java.util.Date());
             crudCursoUsuario.create(novaInscricao);
             System.out.println("Inscrição realizada com sucesso!");

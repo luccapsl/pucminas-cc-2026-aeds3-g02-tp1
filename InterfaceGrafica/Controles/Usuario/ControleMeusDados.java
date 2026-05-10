@@ -87,4 +87,39 @@ public class ControleMeusDados {
             System.out.println("Erro ao atualizar senha: " + e.getMessage());
         }
     }
+
+    public void excluirConta(GerenciadorDeMenus gerenciadorDeMenus, Scanner scanner) {
+        Usuario usuario = gerenciadorDeMenus.getUsuarioLogado();
+        if (usuario == null) {
+            System.out.println("Nenhum usuário logado.");
+            return;
+        }
+        System.out.println("Tem certeza que deseja EXCLUIR DEFINITIVAMENTE sua conta?");
+        System.out.println("ATENÇÃO: Todos os seus cursos e inscrições serão perdidos!");
+        System.out.print("(S) Sim / (N) Não: ");
+        String confirmacao = scanner.nextLine();
+        if (confirmacao.equalsIgnoreCase("S")) {
+            System.out.println("Para confirmar a exclusão, responda à sua pergunta secreta:");
+            System.out.println(usuario.getPerguntaSecreta());
+            System.out.print("Resposta: ");
+            String resposta = scanner.nextLine();
+            if (!resposta.equalsIgnoreCase(usuario.getRespostaSecreta())) {
+                System.out.println("Resposta incorreta. A conta não será excluída.");
+                return;
+            }
+
+            try {
+                crudUsuario.delete(usuario.getId());
+                System.out.println("Conta excluída com sucesso! Você será deslogado.");
+                gerenciadorDeMenus.deslogarUsuario();
+                // Volta para o menu inicial navegando a pilha de menus
+                gerenciadorDeMenus.voltar();
+                gerenciadorDeMenus.voltar();
+            } catch (Exception e) {
+                System.out.println("Erro ao excluir conta: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Operação cancelada.");
+        }
+    }
 }

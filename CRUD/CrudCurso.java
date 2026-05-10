@@ -180,6 +180,14 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
                 indiceIndiretoCodigo.delete(ParCodigoID.hash(c.getCodigo()));
                 arvoreUsuarioCurso.delete(new ParIdUsuarioIdCurso(c.getIdUsuario(), id));
                 arvoreUsuarioNome.delete(new ParUsuarioNomeCursoId(c.getIdUsuario(), c.getNome(), id));
+
+                // Exclusão em cascata das inscrições
+                CRUD.CrudCursoUsuario crudCursoUsuario = new CRUD.CrudCursoUsuario();
+                ArrayList<Entidades.CursoUsuario> inscricoes = crudCursoUsuario.readAllByCurso(id);
+                for (Entidades.CursoUsuario cu : inscricoes) {
+                    crudCursoUsuario.delete(cu.getId());
+                }
+
                 return true;
             }
         }

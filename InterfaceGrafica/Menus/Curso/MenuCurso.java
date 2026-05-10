@@ -26,7 +26,7 @@ public class MenuCurso implements IMenu {
         if (opcaoCurso == null) return;
         switch (opcaoCurso) {
             case GERENCIAR_INSCRITOS:
-                controleCurso.gerenciarInscritos(gerenciadorDeMenus, scanner);
+                controleCurso.gerenciarInscritos(gerenciadorDeMenus, scanner, this.curso);
                 break;
             case CORRIGIR_DADOS:
                 controleCurso.corrigirDados(gerenciadorDeMenus, scanner, this.curso);
@@ -39,6 +39,9 @@ public class MenuCurso implements IMenu {
                 break;
             case CANCELAR_CURSO:
                 controleCurso.cancelarCurso(gerenciadorDeMenus, scanner, this.curso);
+                break;
+            case EXCLUIR_CURSO:
+                controleCurso.excluirCurso(gerenciadorDeMenus, scanner, this.curso);
                 break;
             case RETORNAR:
                 gerenciadorDeMenus.voltar();

@@ -17,6 +17,7 @@ public enum OpcaoCurso implements IOpcaoMenu {
     ENCERRAR_INSCRICOES("C", "Encerrar inscrições"),
     CONCLUIR_CURSO("D", "Concluir curso"),
     CANCELAR_CURSO("E", "Cancelar curso"),
+    EXCLUIR_CURSO("F", "Excluir curso"),
     RETORNAR("R", "Retornar ao menu anterior");
 
     private final String codigo;

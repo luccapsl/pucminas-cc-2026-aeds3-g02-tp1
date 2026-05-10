@@ -51,8 +51,8 @@ public class MenuDetalhesCurso implements IMenu {
         if (opcaoDetalhesCurso == null) return;
         switch (opcaoDetalhesCurso) {
             case INSCRICAO:
-                //// TODO: chamar método de inscrição do Integrante 3.
-                //ex: controleCurso.fazerInscricao(gerenciadorDeMenus, scanner, this.curso);
+                InterfaceGrafica.Controles.Usuario.ControleMinhasInscricoes controleInscricoes = new InterfaceGrafica.Controles.Usuario.ControleMinhasInscricoes();
+                controleInscricoes.efetivarInscricao(this.curso.getId(), gerenciadorDeMenus.getUsuarioLogado());
                 break;
             case RETORNAR:
                 gerenciadorDeMenus.voltar();

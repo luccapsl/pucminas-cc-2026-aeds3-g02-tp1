@@ -71,8 +71,17 @@ public class CrudUsuario extends Genericos.Arquivo<Usuario> {
     public boolean delete(int id) throws Exception {
         Usuario c = super.read(id);
         if (c != null) {
-            if (super.delete(id))
+            if (super.delete(id)) {
+                
+                // Exclusão em cascata das inscrições
+                CRUD.CrudCursoUsuario crudCursoUsuario = new CRUD.CrudCursoUsuario();
+                java.util.ArrayList<Entidades.CursoUsuario> inscricoes = crudCursoUsuario.readAllByUsuario(id);
+                for (Entidades.CursoUsuario cu : inscricoes) {
+                    crudCursoUsuario.delete(cu.getId());
+                }
+
                 return indiceIndiretoEmail.delete(ParEmailID.hash(c.getEmail()));
+            }
         }
         return false;
     }
