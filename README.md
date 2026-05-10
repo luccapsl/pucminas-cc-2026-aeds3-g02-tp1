@@ -52,21 +52,26 @@ O sistema roda em modo texto (terminal) e se baseia no padrão **MVC**, com sepa
 
 ### Tela de Minhas Inscrições (TP2)
 
-Menu principal de inscrições. Permite buscar um curso pelo código NanoID (opção A), listar todos os cursos paginados por data de início (opção C) ou visualizar os cursos em que o usuário já está inscrito.
+Em andamento.
 
 ### Tela de Lista de Cursos (TP2)
 
-Lista paginada de 10 cursos por página, ordenada por data de início. Itens numerados de `(1)` a `(9)` e `(0)` para o décimo. Navegação entre páginas com `(A)` e `(B)`.
+Em andamento.
 
 ### Tela de Detalhes do Curso (TP2)
 
-Exibe código NanoID, nome, autor (nome do usuário criador), descrição e data de início formatada. Oferece a opção de realizar a inscrição no curso.
+Em andamento.
 
 ---
 
 ## Vídeo de Demonstração
 
+### TP 1
 [VideoTrabalhoPraticoI_AEDsIII_Grupo02.mkv](Videos/VideoTrabalhoPraticoI_AEDsIII_Grupo02.mkv)
+
+
+### TP2
+Em andamento.
 
 ---
 
@@ -77,13 +82,15 @@ pucminas-cc-2026-ti3-g02-tp1/
 ├── Main.java
 ├── Entidades/
 │   ├── Usuario.java                             # Entidade Usuário
-│   ├── Curso.java                               # Entidade Curso
+│   ├── Curso.java                               # Entidade Curso (campo transiente `autor`)
+│   ├── CursoUsuario.java                        # Entidade de associação N:N (TP2)
 │   └── EstadoCurso.java                         # Enum de estados do curso
 ├── CRUD/
 │   ├── CrudUsuario.java                         # CRUD de usuários (índice hash de email)
-│   └── CrudCurso.java                           # CRUD de cursos (hash de código + 2 Árvores B+)
+│   ├── CrudCurso.java                           # CRUD de cursos (hash de código + 2 Árvores B+)
+│   └── CrudCursoUsuario.java                    # CRUD de inscrições (2 Árvores B+) (TP2)
 ├── Genericos/
-│   ├── Arquivo.java                             # Base genérica de arquivo binário (ArquivoIndexado)
+│   ├── Arquivo.java                             # Base genérica de arquivo binário
 │   ├── HashExtensivel.java                      # Tabela Hash Extensível genérica
 │   ├── ArvoreBMais.java                         # Árvore B+ genérica
 │   ├── Registro.java                            # Interface para entidades serializáveis
@@ -93,7 +100,9 @@ pucminas-cc-2026-ti3-g02-tp1/
 │   ├── ParEmailID.java                          # Par (email → id) — índice de email
 │   ├── ParCodigoID.java                         # Par (código → id) — índice de código NanoID
 │   ├── ParIdUsuarioIdCurso.java                 # Par (idUsuario, idCurso) — relacionamento 1:N
-│   └── ParUsuarioNomeCursoId.java               # Par (idUsuario, nome, idCurso) — ordenação
+│   ├── ParUsuarioNomeCursoId.java               # Par (idUsuario, nome, idCurso) — ordenação
+│   ├── ParIdCursoIdCursoUsuario.java            # Par (idCurso, idCursoUsuario) — índice B+ (TP2)
+│   └── ParIdUsuarioIdCursoUsuario.java          # Par (idUsuario, idCursoUsuario) — índice B+ (TP2)
 └── InterfaceGrafica/
     ├── Menus/
     │   ├── IMenu.java                           # Interface de menu
@@ -113,8 +122,8 @@ pucminas-cc-2026-ti3-g02-tp1/
     │       ├── MenuNovoCurso.java               # Formulário de criação de curso
     │       ├── MenuAlterarCurso.java            # Formulário de edição de curso
     │       ├── MenuGerenciarInscritos.java      # Gerenciar inscritos (TP2)
-│       ├── MenuListaCursos.java             # Lista paginada de todos os cursos (TP2)
-│       └── MenuDetalhesCurso.java           # Detalhes do curso — visão do aluno (TP2)
+    │       ├── MenuListaCursos.java             # Lista paginada de todos os cursos (TP2)
+    │       └── MenuDetalhesCurso.java           # Detalhes do curso — visão do aluno (TP2)
     ├── Controles/
     │   ├── Home/
     │   │   └── ControleHome.java               # Lógica do menu principal
@@ -171,6 +180,16 @@ pucminas-cc-2026-ti3-g02-tp1/
 | `descricao` | `String` | Descrição detalhada |
 | `dataInicio` | `Date` | Data de início prevista |
 | `estado` | `char` | Estado atual (ver tabela abaixo) |
+| `autor` | `String` | **Transiente** — nome do dono; preenchido em memória via `CrudUsuario` |
+
+### CursoUsuario (`CursoUsuario.java`) — TP2
+
+| Atributo | Tipo | Descrição |
+|---|---|---|
+| `idCursoUsuario` | `int` | Identificador sequencial único |
+| `idCurso` | `int` | Chave estrangeira — ID do curso |
+| `idUsuario` | `int` | Chave estrangeira — ID do usuário inscrito |
+| `dataInscricao` | `Date` | Data em que a inscrição foi realizada |
 
 ### Estados do Curso (`EstadoCurso.java`)
 
@@ -215,6 +234,12 @@ pucminas-cc-2026-ti3-g02-tp1/
 - **Paginação** (`MenuListaCursos`): exibe 10 cursos por página. Teclas `(1)` a `(9)` selecionam o 1º ao 9º item; tecla `(0)` seleciona o 10º (fórmula: `tecla = (posNaPagina + 1) % 10`). Navegação com `(A)` página anterior e `(B)` próxima página.
 - **Detalhes do curso** (`MenuDetalhesCurso`): exibe código NanoID (`getCodigo()`), nome, autor (nome do usuário criador, obtido via `CrudUsuario.read(idUsuario)` e armazenado no campo transiente `autor` de `Curso`), descrição e data de início formatada (`SimpleDateFormat("dd/MM/yyyy")`). Oferece a opção `(A) Fazer minha inscrição no curso`.
 
+### Gerenciamento de Inscrições (TP2)
+
+- **Exibir minhas inscrições** (`ControleMinhasInscricoes.exibirMinhasInscricoes`): recupera todos os `CursoUsuario` do usuário logado via `CrudCursoUsuario.readAllByUsuario(idUsuario)` e exibe nome do curso, estado e data de inscrição.
+- **Efetivar inscrição** (`ControleMinhasInscricoes.efetivarInscricao`): cria um novo `CursoUsuario` com data atual e chama `CrudCursoUsuario.create()`, atualizando as duas Árvores B+ de índice.
+- **Cancelar inscrição** (`ControleMinhasInscricoes.cancelarInscricao`): localiza o registro de inscrição e chama `CrudCursoUsuario.delete()`.
+
 ---
 
 ## Persistência de Dados e Estruturas de Dados
@@ -231,6 +256,7 @@ Gerencia um `RandomAccessFile` com a seguinte estrutura de registro:
 - Cabeçalho: último ID (4 bytes) + ponteiro para lista de espaços excluídos (8 bytes).
 - Registros excluídos entram em lista encadeada ordenada por tamanho, permitindo reuso.
 - **Índice direto**: `HashExtensivel<ParIDEndereco>` garante acesso O(1) por ID.
+- **`readAll()`** (TP2): varre sequencialmente o arquivo pulando lápides `'*'`, retornando todos os registros válidos.
 
 ### Índices de Usuários (`CrudUsuario`)
 
@@ -248,21 +274,33 @@ Gerencia um `RandomAccessFile` com a seguinte estrutura de registro:
 | Relacionamento 1:N | `ArvoreBMais<ParIdUsuarioIdCurso>` | (idUsuario, idCurso) |
 | Ordenação por nome | `ArvoreBMais<ParUsuarioNomeCursoId>` | (idUsuario, nome, idCurso) |
 
+### Índices de Inscrições (`CrudCursoUsuario`) — TP2
+
+| Índice | Estrutura | Mapeamento |
+|---|---|---|
+| Por curso | `ArvoreBMais<ParIdCursoIdCursoUsuario>` | (idCurso, idCursoUsuario) |
+| Por usuário | `ArvoreBMais<ParIdUsuarioIdCursoUsuario>` | (idUsuario, idCursoUsuario) |
+
 ### Arquivos em Disco
 
 ```
 dados/
 ├── usuarios/
-│   ├── usuarios.db           # Registros binários
-│   ├── usuarios.d.db / .c.db # Índice direto (hash)
-│   ├── indiceEmail.d.db      # Índice de email (diretório)
-│   └── indiceEmail.c.db      # Índice de email (cestos)
-└── cursos/
-    ├── cursos.db              # Registros binários
-    ├── cursos.d.db / .c.db   # Índice direto (hash)
-    ├── indiceCodigo.d.db / .c.db   # Índice de código NanoID
-    ├── arvoreUsuarioCurso.d.db     # Árvore B+ — relação 1:N
-    └── arvoreUsuarioNome.d.db      # Árvore B+ — ordenação por nome
+│   ├── usuarios.db              # Registros binários
+│   ├── usuarios.d.db / .c.db   # Índice direto (hash)
+│   ├── indiceEmail.d.db        # Índice de email (diretório)
+│   └── indiceEmail.c.db        # Índice de email (cestos)
+├── cursos/
+│   ├── cursos.db               # Registros binários
+│   ├── cursos.d.db / .c.db     # Índice direto (hash)
+│   ├── indiceCodigo.d.db / .c.db    # Índice de código NanoID
+│   ├── arvoreUsuarioCurso.d.db      # Árvore B+ — relação 1:N
+│   └── arvoreUsuarioNome.d.db       # Árvore B+ — ordenação por nome
+└── cursoUsuario/                    # Criado automaticamente na primeira inscrição (TP2)
+    ├── cursoUsuario.db              # Registros binários de inscrições
+    ├── cursoUsuario.d.db / .c.db    # Índice direto (hash)
+    ├── arvoreCursoInscritos.d.db    # Árvore B+ — inscritos por curso
+    └── arvoreUsuarioInscritos.d.db  # Árvore B+ — inscrições por usuário
 ```
 
 ---
@@ -299,31 +337,31 @@ java -jar target/pucminas-cc-2026-ti3-g02-tp1-1.0.0.jar
 
 **1. Há um CRUD da entidade de associação CursoUsuario (que estende a classe ArquivoIndexado, acrescentando Tabelas Hash Extensíveis e Árvores B+ como índices diretos e indiretos conforme necessidade) que funciona corretamente?**
 
-**Em andamento.** A entidade `CursoUsuario` e seu CRUD com as duas Árvores B+ de índice (`(idCurso, idCursoUsuario)` e `(idUsuario, idCursoUsuario)`) estão sendo implementados por outro integrante do grupo como parte do TP2.
+**Sim.** 
 
 **2. A visão de inscrições está corretamente implementada e permite consultas aos cursos em que um usuário está inscrito?**
 
-**Parcialmente.** A tela `MenuMinhasInscricoes` já exibe as opções de busca por código (A) e listagem completa (C). A seção de inscrições ativas do usuário (`exibirMinhasInscricoes`) aguarda a conclusão do CRUD de `CursoUsuario`.
+**Sim.** A
 
 **3. A visão de cursos funciona corretamente e permite a gestão dos usuários inscritos em um curso?**
 
-**Em andamento.** A tela `MenuGerenciarInscritos` (acessível via `Meus Cursos → curso → Gerenciar inscritos`) está sendo implementada por outro integrante.
+**Parcialmente.** A tela `MenuGerenciarInscritos` (acessível via `Meus Cursos → curso → Gerenciar inscritos`) existe e exibe a opção de exportar inscritos, mas a lógica de exportação ainda não está implementada.
 
 **4. Há uma visualização dos cursos de outras pessoas por meio de um código NanoID?**
 
-**Sim.** O usuário acessa `Minhas Inscrições → (A) Buscar curso por código`, informa o NanoID de 10 caracteres e o sistema abre diretamente a tela `MenuDetalhesCurso` com todos os dados do curso (código, nome, autor, descrição, data de início).
+**Sim.** 
 
 **5. A integridade do relacionamento entre cursos e usuários está mantida em todas as operações?**
 
-**Sim** para as operações já implementadas. O `CrudCurso.update()` sincroniza todos os índices afetados ao alterar nome, código ou `idUsuario`. A integridade do relacionamento N:N (inscrições) será garantida pelo CRUD de `CursoUsuario`.
+**Sim** 
 
 **6. O trabalho compila corretamente?**
 
-**Sim.** `mvn clean compile` conclui sem erros.
+**Sim.** 
 
 **7. O trabalho está completo e funcionando sem erros de execução?**
 
-**Sim, com ressalvas.** Todas as funcionalidades de busca e listagem de cursos (TP2) estão implementadas e funcionando: busca por NanoID, listagem paginada por data, tela de detalhes com autor. As funcionalidades de inscrição em si (criar/cancelar inscrição, listar inscritos) dependem do CRUD de `CursoUsuario`, ainda em desenvolvimento por outro integrante.
+**Sim, com ressalvas.** Todas as funcionalidades de busca e listagem de cursos (TP2) estão implementadas e funcionando: busca por NanoID, listagem paginada por data, tela de detalhes com autor, efetivar e cancelar inscrições. A exportação de inscritos em `MenuGerenciarInscritos` está pendente de implementação.
 
 **8. O trabalho é original e não a cópia de um trabalho de outro grupo?**
 
