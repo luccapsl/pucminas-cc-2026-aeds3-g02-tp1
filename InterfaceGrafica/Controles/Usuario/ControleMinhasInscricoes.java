@@ -142,6 +142,7 @@ public class ControleMinhasInscricoes {
             for (CursoUsuario cu : inscricoesUsuario) {
                 if (cu.getIdCurso() == idCurso) {
                     System.out.println("Você já está inscrito neste curso.");
+                    try { Thread.sleep(2000); } catch (InterruptedException ex) {}
                     return;
                 }
             }
