@@ -1,8 +1,8 @@
 package InterfaceGrafica.Menus;
 
+import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
-import java.util.ArrayDeque;
 import java.util.Scanner;
 import java.util.StringJoiner;
 
@@ -10,7 +10,7 @@ import Entidades.Usuario;
 
 public class GerenciadorDeMenus {
     public static final String TITULO_SISTEMA = "MyCursos";
-    public static final String VERSAO_SISTEMA = "1.0";
+    public static final String VERSAO_SISTEMA = "2.0";
     private Deque<IMenu> pilhaDeMenus;
     private Usuario usuarioLogado;
 

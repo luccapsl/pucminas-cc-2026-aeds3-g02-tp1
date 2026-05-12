@@ -52,15 +52,15 @@ O sistema roda em modo texto (terminal) e se baseia no padrão **MVC**, com sepa
 
 ### Tela de Minhas Inscrições (TP2)
 
-Em andamento.
+![alt text](screenshots/tela-minhas-inscricoes.png)
 
 ### Tela de Lista de Cursos (TP2)
 
-Em andamento.
+![alt text](screenshots/tela-lista-cursos.png)
 
 ### Tela de Detalhes do Curso (TP2)
 
-Em andamento.
+![alt text](screenshots/tela-detalhes-curso.png)
 
 ---
 
@@ -123,7 +123,8 @@ pucminas-cc-2026-ti3-g02-tp1/
     │       ├── MenuAlterarCurso.java            # Formulário de edição de curso
     │       ├── MenuGerenciarInscritos.java      # Gerenciar inscritos (TP2)
     │       ├── MenuListaCursos.java             # Lista paginada de todos os cursos (TP2)
-    │       └── MenuDetalhesCurso.java           # Detalhes do curso — visão do aluno (TP2)
+    │       ├── MenuDetalhesCurso.java           # Detalhes do curso — visão do aluno (TP2)
+    │       └── MenuVerDadosInscrito.java         # Dados e cancelamento de inscrito (TP2)
     ├── Controles/
     │   ├── Home/
     │   │   └── ControleHome.java               # Lógica do menu principal
@@ -145,13 +146,14 @@ pucminas-cc-2026-ti3-g02-tp1/
         │   ├── OpcaoAuth.java
         │   ├── OpcaoMeusCursos.java
         │   ├── OpcaoMeusDados.java
-        │   └── OpcaoMinhasInscricoes.java      # Atualizado: buscar (A) e listar (C) (TP2)
+        │   └── OpcaoMinhasInscricoes.java      # Buscar (A), Listar (C), Inscrever (I), Cancelar (X) (TP2)
         └── Curso/
             ├── OpcaoCurso.java
             ├── OpcaoAlterarCurso.java
             ├── OpcaoGerenciarInscritos.java
             ├── OpcaoListaCurso.java             # Opções de paginação (TP2)
-            └── OpcaoDetalhesCurso.java          # Opções da tela de detalhes do aluno (TP2)
+            ├── OpcaoDetalhesCurso.java          # Opções da tela de detalhes do aluno (TP2)
+            └── OpcaoVerDadosInscrito.java        # Opções da tela de dados do inscrito (TP2)
 ```
 
 ---
@@ -236,9 +238,10 @@ pucminas-cc-2026-ti3-g02-tp1/
 
 ### Gerenciamento de Inscrições (TP2)
 
-- **Exibir minhas inscrições** (`ControleMinhasInscricoes.exibirMinhasInscricoes`): recupera todos os `CursoUsuario` do usuário logado via `CrudCursoUsuario.readAllByUsuario(idUsuario)` e exibe nome do curso, estado e data de inscrição.
-- **Efetivar inscrição** (`ControleMinhasInscricoes.efetivarInscricao`): cria um novo `CursoUsuario` com data atual e chama `CrudCursoUsuario.create()`, atualizando as duas Árvores B+ de índice.
-- **Cancelar inscrição** (`ControleMinhasInscricoes.cancelarInscricao`): localiza o registro de inscrição e chama `CrudCursoUsuario.delete()`.
+- **Exibir minhas inscrições** (`ControleMinhasInscricoes.exibirMinhasInscricoes`): na abertura do `MenuMinhasInscricoes`, lista automaticamente os `CursoUsuario` do usuário logado via `CrudCursoUsuario.readAllByUsuario(idUsuario)` com nome, estado e data de inscrição.
+- **Inscrever-se** (`OpcaoMinhasInscricoes.INSCREVER` / `ControleMinhasInscricoes.efetivarInscricao`): exibe cursos disponíveis (não inscritos), o usuário digita o ID e o sistema cria o `CursoUsuario` com data atual, atualizando as duas Árvores B+. Também disponível via `(A) Fazer minha inscrição` na tela de detalhes do curso.
+- **Cancelar inscrição** (`OpcaoMinhasInscricoes.CANCELAR` / `ControleMinhasInscricoes.cancelarInscricao`): o usuário digita o ID do curso e o sistema exclui o registro de `CursoUsuario`, removendo das duas Árvores B+ de índice.
+- **Gerenciar inscritos** (`MenuGerenciarInscritos`): visão do proponente — lista todos os inscritos do curso com nome e data de inscrição. Seleção numérica abre `MenuVerDadosInscrito` (exibe nome e e-mail do aluno, permite cancelar a inscrição pelo proponente). Opção `(E) Exportar inscritos` gera arquivo CSV `inscritos_curso_{id}.csv` com colunas `Nome,Email`.
 
 ---
 
@@ -337,23 +340,23 @@ java -jar target/pucminas-cc-2026-ti3-g02-tp1-1.0.0.jar
 
 **1. Há um CRUD da entidade de associação CursoUsuario (que estende a classe ArquivoIndexado, acrescentando Tabelas Hash Extensíveis e Árvores B+ como índices diretos e indiretos conforme necessidade) que funciona corretamente?**
 
-**Sim.** 
+**Sim.**
 
 **2. A visão de inscrições está corretamente implementada e permite consultas aos cursos em que um usuário está inscrito?**
 
-**Sim.** A
+**Sim.**
 
 **3. A visão de cursos funciona corretamente e permite a gestão dos usuários inscritos em um curso?**
 
-**Parcialmente.** A tela `MenuGerenciarInscritos` (acessível via `Meus Cursos → curso → Gerenciar inscritos`) existe e exibe a opção de exportar inscritos, mas a lógica de exportação ainda não está implementada.
+**Sim.**
 
 **4. Há uma visualização dos cursos de outras pessoas por meio de um código NanoID?**
 
-**Sim.** 
+**Sim.**
 
 **5. A integridade do relacionamento entre cursos e usuários está mantida em todas as operações?**
 
-**Sim** 
+**Sim.**
 
 **6. O trabalho compila corretamente?**
 
@@ -361,7 +364,7 @@ java -jar target/pucminas-cc-2026-ti3-g02-tp1-1.0.0.jar
 
 **7. O trabalho está completo e funcionando sem erros de execução?**
 
-**Sim, com ressalvas.** Todas as funcionalidades de busca e listagem de cursos (TP2) estão implementadas e funcionando: busca por NanoID, listagem paginada por data, tela de detalhes com autor, efetivar e cancelar inscrições. A exportação de inscritos em `MenuGerenciarInscritos` está pendente de implementação.
+**Sim.**
 
 **8. O trabalho é original e não a cópia de um trabalho de outro grupo?**
 
