@@ -71,7 +71,7 @@ O sistema roda em modo texto (terminal) e se baseia no padrão **MVC**, com sepa
 
 
 ### TP2
-Em andamento.
+[VideoTrabalhoPraticoII_AEDsIII_Grupo02.mp4](Videos/VideoTrabalhoPraticoII_AEDsIII_Grupo02.mp4)
 
 ---
 
