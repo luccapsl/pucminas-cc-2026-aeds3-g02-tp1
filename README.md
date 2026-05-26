@@ -73,6 +73,9 @@ O sistema roda em modo texto (terminal) e se baseia no padrão **MVC**, com sepa
 ### TP2
 [VideoTrabalhoPraticoII_AEDsIII_Grupo02.mp4](Videos/VideoTrabalhoPraticoII_AEDsIII_Grupo02.mp4)
 
+### TP3
+[VideoTrabalhoPraticoIII_AEDsIII_Grupo02.mp4](Videos/VideoTrabalhoPraticoIII_AEDsIII_Grupo02.mp4)
+
 ---
 
 ## Arquitetura e Classes Criadas
@@ -103,6 +106,8 @@ pucminas-cc-2026-ti3-g02-tp1/
 │   ├── ParUsuarioNomeCursoId.java               # Par (idUsuario, nome, idCurso) — ordenação
 │   ├── ParIdCursoIdCursoUsuario.java            # Par (idCurso, idCursoUsuario) — índice B+ (TP2)
 │   └── ParIdUsuarioIdCursoUsuario.java          # Par (idUsuario, idCursoUsuario) — índice B+ (TP2)
+├── IndiceInvertido/
+│   └── PreProcessamento.java                    # Normalização e tokenização de nomes de cursos (TP3)
 └── InterfaceGrafica/
     ├── Menus/
     │   ├── IMenu.java                           # Interface de menu
@@ -308,6 +313,51 @@ dados/
 
 ---
 
+## Índice Invertido — Pré-processamento de Texto (TP3)
+
+O pacote `IndiceInvertido` implementa o pré-processamento de texto que alimentará o índice invertido de busca por nome de curso. A classe `PreProcessamento` transforma um nome bruto em um vetor de termos limpos, prontos para indexação.
+
+### Pipeline de pré-processamento
+
+```
+nome bruto  →  normalizar (NFD + remove diacríticos)  →  minúsculas  →  tokenizar  →  filtrar stop words  →  [termos]
+```
+
+1. **Normalização** (`java.text.Normalizer.Form.NFD`): decompõe cada caractere acentuado em letra-base + marcação diacrítica e remove as marcações, eliminando acentos sem dependências externas. Exemplo: `"ção"` → `"cao"`.
+2. **Tokenização**: converte para minúsculas e divide por `[^a-z]+` — qualquer sequência de não-letras (espaços, hífens, pontuação, números) é separador. Tokens com menos de 2 caracteres são descartados.
+3. **Remoção de stop words**: tokens que constam na lista abaixo são excluídos do resultado.
+
+### Exemplos
+
+| Entrada | Saída |
+|---|---|
+| `"Programação Orientada a Objetos"` | `["programacao", "orientada", "objetos"]` |
+| `"Banco de Dados NoSQL para Iniciantes"` | `["banco", "dados", "nosql", "iniciantes"]` |
+| `"Introdução às Redes Neurais"` | `["introducao", "redes", "neurais"]` |
+| `"Front-End: HTML/CSS"` | `["front", "end", "html", "css"]` |
+
+### Lista de stop words
+
+Todas as entradas são armazenadas já normalizadas (sem acento), pois a comparação ocorre após o passo de normalização.
+
+**Artigos**
+
+`o` `a` `os` `as` `um` `uma` `uns` `umas`
+
+**Preposições simples e combinadas**
+
+`de` `do` `da` `dos` `das` `em` `no` `na` `nos` `nas` `por` `pelo` `pela` `pelos` `pelas` `para` `com` `sem` `sob` `sobre` `entre` `ate` `apos` `desde` `ante`
+
+**Conjunções**
+
+`e` `ou` `mas` `porem` `contudo` `todavia` `entretanto` `portanto` `logo` `pois` `porque` `que` `se` `como` `quando` `embora` `enquanto` `nem` `seja`
+
+**Pronomes**
+
+`eu` `tu` `ele` `ela` `nos` `vos` `eles` `elas` `me` `te` `lhe` `lhes` `isso` `este` `esta` `esse` `essa` `aquele` `aquela` `meu` `minha` `seu` `sua`
+
+---
+
 ## Como Compilar e Executar
 
 **Pré-requisitos:** Java 11+ e Maven instalados.
@@ -336,37 +386,25 @@ java -jar target/pucminas-cc-2026-ti3-g02-tp1-1.0.0.jar
 
 ---
 
-## Checklist — TP2
+## Checklist — TP3
 
-**1. Há um CRUD da entidade de associação CursoUsuario (que estende a classe ArquivoIndexado, acrescentando Tabelas Hash Extensíveis e Árvores B+ como índices diretos e indiretos conforme necessidade) que funciona corretamente?**
+**1. O índice invertido com os termos dos nomes dos cursos foi criado usando a classe ListaInvertida?**
 
-**Sim.**
+**Em andamento.**
 
-**2. A visão de inscrições está corretamente implementada e permite consultas aos cursos em que um usuário está inscrito?**
+**2. É possível buscar cursos por palavras no menu de inscrição?**
 
-**Sim.**
+**Em andamento.**
 
-**3. A visão de cursos funciona corretamente e permite a gestão dos usuários inscritos em um curso?**
-
-**Sim.**
-
-**4. Há uma visualização dos cursos de outras pessoas por meio de um código NanoID?**
+**3. O trabalho compila corretamente?**
 
 **Sim.**
 
-**5. A integridade do relacionamento entre cursos e usuários está mantida em todas as operações?**
+**4. O trabalho está completo e funcionando sem erros de execução?**
 
-**Sim.**
+**Em andamento.**
 
-**6. O trabalho compila corretamente?**
-
-**Sim.** 
-
-**7. O trabalho está completo e funcionando sem erros de execução?**
-
-**Sim.**
-
-**8. O trabalho é original e não a cópia de um trabalho de outro grupo?**
+**5. O trabalho é original e não a cópia de um trabalho de outro grupo?**
 
 **Sim.**
 
