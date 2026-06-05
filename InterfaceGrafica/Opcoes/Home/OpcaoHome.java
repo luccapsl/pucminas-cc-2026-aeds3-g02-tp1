@@ -5,7 +5,8 @@ import InterfaceGrafica.Opcoes.IOpcaoMenu;
 public enum OpcaoHome implements IOpcaoMenu {
     MEUS_DADOS("A", "Meus dados"),
     MEUS_CURSOS("B", "Meus cursos"),
-    MINHAS_INSCRICOES("C", "Minhas inscrições"), 
+    MINHAS_INSCRICOES("C", "Minhas inscrições"),
+    DEBUG_INDICE_INVERTIDO("D", "[Debug] Ver índice invertido"),
     SAIR("S", "Sair");
 
     private final String codigo;

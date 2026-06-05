@@ -1,6 +1,7 @@
 package InterfaceGrafica.Menus.Home;
 import java.util.Scanner;
 
+import CRUD.CrudCurso;
 import InterfaceGrafica.Controles.Home.ControleHome;
 import InterfaceGrafica.Menus.GerenciadorDeMenus;
 import InterfaceGrafica.Menus.IMenu;
@@ -33,6 +34,13 @@ public class MenuHome implements IMenu {
                 break;
             case MINHAS_INSCRICOES:
                 controleHome.minhasInscricoes(gerenciadorDeMenus, scanner);
+                break;
+            case DEBUG_INDICE_INVERTIDO:
+                try {
+                    new CrudCurso().printIndiceInvertido();
+                } catch (Exception e) {
+                    System.out.println("Erro ao exibir índice invertido: " + e.getMessage());
+                }
                 break;
             case SAIR:
                 gerenciadorDeMenus.deslogarUsuario();

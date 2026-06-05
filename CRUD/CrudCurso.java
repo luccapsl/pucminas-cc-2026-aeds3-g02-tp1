@@ -3,7 +3,11 @@ package CRUD;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import Entidades.Curso;
@@ -12,12 +16,17 @@ import Genericos.HashExtensivel;
 import Genericos.ParCodigoID;
 import Genericos.ParIdUsuarioIdCurso;
 import Genericos.ParUsuarioNomeCursoId;
+import IndiceInvertido.ElementoLista;
+import IndiceInvertido.ListaInvertida;
+import IndiceInvertido.PreProcessamento;
 
 public class CrudCurso extends Genericos.Arquivo<Curso> {
 
     HashExtensivel<ParCodigoID> indiceIndiretoCodigo;
     ArvoreBMais<ParIdUsuarioIdCurso> arvoreUsuarioCurso;
     ArvoreBMais<ParUsuarioNomeCursoId> arvoreUsuarioNome;
+    ListaInvertida listaInvertida;
+    PreProcessamento preProcessamento;
 
     /**
      * 
@@ -41,6 +50,28 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
                 ParUsuarioNomeCursoId.class.getConstructor(),
                 4,
                 "." + File.separator + "dados" + File.separator + "cursos" + File.separator + "arvoreUsuarioNome.d.db");
+        listaInvertida = new ListaInvertida(
+                4,
+                "." + File.separator + "dados" + File.separator + "cursos" + File.separator + "indiceInvertido.dicionario.db",
+                "." + File.separator + "dados" + File.separator + "cursos" + File.separator + "indiceInvertido.blocos.db");
+        preProcessamento = new PreProcessamento();
+    }
+
+    /**
+     * Calcula o TF (Term Frequency) de cada termo do nome.
+     * TF = ocorrências do termo / total de termos.
+     */
+    private Map<String, Float> calcularTF(String nome) {
+        List<String> termos = preProcessamento.preProccessString(nome);
+        Map<String, Float> tf = new HashMap<>();
+        for (String t : termos) {
+            tf.put(t, tf.getOrDefault(t, 0f) + 1f);
+        }
+        // Normaliza: freq / total de termos
+        for (String t : tf.keySet()) {
+            tf.put(t, tf.get(t) / termos.size());
+        }
+        return tf;
     }
 
     /**
@@ -56,6 +87,14 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
         indiceIndiretoCodigo.create(new ParCodigoID(c.getCodigo(), id));
         arvoreUsuarioCurso.create(new ParIdUsuarioIdCurso(c.getIdUsuario(), id));
         arvoreUsuarioNome.create(new ParUsuarioNomeCursoId(c.getIdUsuario(), c.getNome(), id));
+
+        // Insere termos do nome no índice invertido com TF
+        Map<String, Float> tf = calcularTF(c.getNome());
+        for (Map.Entry<String, Float> entry : tf.entrySet()) {
+            listaInvertida.create(entry.getKey(), new ElementoLista(id, entry.getValue()));
+        }
+        listaInvertida.incrementaEntidades();
+
         return id;
     }
 
@@ -181,6 +220,14 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
                 arvoreUsuarioCurso.delete(new ParIdUsuarioIdCurso(c.getIdUsuario(), id));
                 arvoreUsuarioNome.delete(new ParUsuarioNomeCursoId(c.getIdUsuario(), c.getNome(), id));
 
+                // Remove termos do nome do índice invertido
+                List<String> termos = preProcessamento.preProccessString(c.getNome());
+                Set<String> termosUnicos = new HashSet<>(termos);
+                for (String t : termosUnicos) {
+                    listaInvertida.delete(t, id);
+                }
+                listaInvertida.decrementaEntidades();
+
                 // Exclusão em cascata das inscrições
                 CRUD.CrudCursoUsuario crudCursoUsuario = new CRUD.CrudCursoUsuario();
                 ArrayList<Entidades.CursoUsuario> inscricoes = crudCursoUsuario.readAllByCurso(id);
@@ -204,6 +251,9 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
         Curso cursoVelho = read(novoCurso.getId());
 
         if (super.update(novoCurso)) {
+            // Verifica se o nome mudou para atualizar o índice invertido
+            boolean nomeMudou = novoCurso.getNome().compareTo(cursoVelho.getNome()) != 0;
+
             if (novoCurso.getCodigo().compareTo(cursoVelho.getCodigo()) != 0) {
                 indiceIndiretoCodigo.delete(ParCodigoID.hash(cursoVelho.getCodigo()));
                 indiceIndiretoCodigo.create(new ParCodigoID(novoCurso.getCodigo(), novoCurso.getId()));
@@ -220,12 +270,29 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
                         new ParUsuarioNomeCursoId(cursoVelho.getIdUsuario(), cursoVelho.getNome(), cursoVelho.getId()));
                 arvoreUsuarioNome.create(
                         new ParUsuarioNomeCursoId(novoCurso.getIdUsuario(), novoCurso.getNome(), novoCurso.getId()));
-            } else if (novoCurso.getNome().compareTo(cursoVelho.getNome()) != 0) {
+            } else if (nomeMudou) {
                 arvoreUsuarioNome.delete(
                         new ParUsuarioNomeCursoId(cursoVelho.getIdUsuario(), cursoVelho.getNome(), cursoVelho.getId()));
                 arvoreUsuarioNome.create(
                         new ParUsuarioNomeCursoId(novoCurso.getIdUsuario(), novoCurso.getNome(), novoCurso.getId()));
             }
+
+            // Atualiza o índice invertido se o nome mudou
+            if (nomeMudou) {
+                // Remove termos antigos do índice invertido
+                List<String> termosAntigos = preProcessamento.preProccessString(cursoVelho.getNome());
+                Set<String> termosAntigosUnicos = new HashSet<>(termosAntigos);
+                for (String t : termosAntigosUnicos) {
+                    listaInvertida.delete(t, novoCurso.getId());
+                }
+
+                // Insere termos novos no índice invertido com TF
+                Map<String, Float> tfNovo = calcularTF(novoCurso.getNome());
+                for (Map.Entry<String, Float> entry : tfNovo.entrySet()) {
+                    listaInvertida.create(entry.getKey(), new ElementoLista(novoCurso.getId(), entry.getValue()));
+                }
+            }
+
             return true;
         }
         return false;
@@ -325,5 +392,15 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
             return update(c);
         }
         return false;
+    }
+
+    /**
+     * Imprime o conteúdo do índice invertido no console (para testes).
+     */
+    public void printIndiceInvertido() throws Exception {
+        System.out.println("\n=== ÍNDICE INVERTIDO DE CURSOS ===");
+        System.out.println("Total de entidades cadastradas: " + listaInvertida.numeroEntidades());
+        listaInvertida.print();
+        System.out.println("=================================\n");
     }
 }
