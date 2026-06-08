@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.Collections;
 
 import Entidades.Curso;
 import Genericos.ArvoreBMais;
@@ -402,5 +403,89 @@ public class CrudCurso extends Genericos.Arquivo<Curso> {
         System.out.println("Total de entidades cadastradas: " + listaInvertida.numeroEntidades());
         listaInvertida.print();
         System.out.println("=================================\n");
+    }
+
+    /**
+     * Classe auxiliar para o cálculo do Ranking TF-IDF.
+     * Implementa Comparable para organizar a lista de maior para o menor Score.
+     */
+    private class CursoScore implements Comparable<CursoScore> {
+        int idCurso;
+        float score;
+
+        public CursoScore(int idCurso, float score) {
+            this.idCurso = idCurso;
+            this.score = score;
+        }
+
+        @Override
+        public int compareTo(CursoScore outro) {
+            return Float.compare(outro.score, this.score);
+        }
+    }
+
+    /**
+     * Aciona a busca TF×IDF recebendo uma string de pesquisa.
+     */
+    public ArrayList<Curso> buscarPorPalavrasChave(String busca) throws Exception {
+        List<String> termosBusca = preProcessamento.preProccessString(busca);
+        
+        if (termosBusca == null || termosBusca.isEmpty()) {
+            return new ArrayList<>(); // Retorna vazio se digitarem stop words
+        }
+
+        // Obtém total de cursos para o cálculo do IDF
+        int totalCursos = listaInvertida.numeroEntidades();
+        if (totalCursos == 0) return new ArrayList<>();
+
+        // Mapa para Combinar listas de múltiplos termos somando scores de mesmo ID
+        Map<Integer, Float> mapaScores = new HashMap<>();
+
+        // Transforma em Set para evitar calcular o mesmo termo duas vezes se o usuário repetiu na busca
+        Set<String> termosUnicos = new HashSet<>(termosBusca);
+
+        for (String termo : termosUnicos) {
+            // Puxa do índice invertido em quais cursos este termo aparece
+            ElementoLista[] ocorrencias = listaInvertida.read(termo);
+            
+            int docFreq = ocorrencias.length; 
+            
+            if (docFreq > 0) {
+                // Cálculo de IDF: log(total_cursos / doc_freq) + 1
+                float idf = (float) (Math.log10((double) totalCursos / docFreq) + 1);
+
+                for (ElementoLista ocorrencia : ocorrencias) {
+                    float tf = ocorrencia.getFrequencia(); 
+                    
+                    // Cálculo de TF×IDF para o termo atual
+                    float tfIdf = tf * idf;
+                    int idCurso = ocorrencia.getId();
+                    
+                    // Somar scores de um mesmo curso se a busca tem múltiplos termos
+                    mapaScores.put(idCurso, mapaScores.getOrDefault(idCurso, 0f) + tfIdf);
+                }
+            }
+        }
+
+        // Transfere tudo do mapa para uma Lista para podermos ordenar
+        List<CursoScore> listaScores = new ArrayList<>();
+        for (Map.Entry<Integer, Float> entry : mapaScores.entrySet()) {
+            listaScores.add(new CursoScore(entry.getKey(), entry.getValue()));
+        }
+        
+        // Ordena resultado final por score decrescente
+        Collections.sort(listaScores); 
+
+        // Agora transformamos essa lista de IDs e Scores na lista de Objetos Curso real
+        ArrayList<Curso> cursosRanqueados = new ArrayList<>();
+        for (CursoScore cs : listaScores) {
+            Curso c = this.read(cs.idCurso); 
+            // Garante que não vai recomendar cursos cancelados
+            if (c != null && c.getEstado() != '3') { 
+                cursosRanqueados.add(c);
+            }
+        }
+
+        return cursosRanqueados;
     }
 }
