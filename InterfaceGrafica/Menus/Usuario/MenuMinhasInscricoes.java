@@ -36,6 +36,13 @@ public class MenuMinhasInscricoes implements IMenu {
                     System.out.println("Erro ao buscar curso: " + e.getMessage());
                 }
                 break;
+            case BUSCAR_PALAVRAS_CHAVE:
+                try {
+                    controleMinhasInscricoes.buscarPorPalavrasChave(scanner);
+                } catch (Exception e) {
+                    System.out.println("Erro ao buscar curso por palavras-chave: " + e.getMessage());
+                }
+                break;
             case LISTAR_CURSOS:
                 try {
                     controleMinhasInscricoes.listarTodosCursos(gerenciadorDeMenus);

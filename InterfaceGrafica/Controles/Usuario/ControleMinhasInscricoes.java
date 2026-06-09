@@ -2,6 +2,7 @@ package InterfaceGrafica.Controles.Usuario;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import CRUD.CrudCurso;
@@ -10,6 +11,7 @@ import CRUD.CrudCursoUsuario;
 import Entidades.Curso;
 import Entidades.CursoUsuario;
 import Entidades.Usuario;
+import IndiceInvertido.PreProcessamento;
 import InterfaceGrafica.Menus.Curso.MenuDetalhesCurso;
 import InterfaceGrafica.Menus.Curso.MenuListaCursos;
 import InterfaceGrafica.Menus.GerenciadorDeMenus;
@@ -91,6 +93,21 @@ public class ControleMinhasInscricoes {
             }
         } catch (Exception e) {
             System.out.println("Erro ao buscar curso: " + e.getMessage());
+        }
+    }
+
+    public void buscarPorPalavrasChave(Scanner scanner) {
+        try {
+            System.out.print("Digite as palavras-chave para a busca: ");
+            String busca = scanner.nextLine();
+            PreProcessamento preprocessador = new PreProcessamento();
+            List<String> termosProcessados = preprocessador.preProccessString(busca);
+            
+            System.out.println("\nPalavras-chave recebidas e pré-processadas:");
+            System.out.println(termosProcessados);
+            System.out.println("=========================================\n");
+        } catch (Exception e) {
+            System.out.println("Erro ao buscar curso por palavras-chave: " + e.getMessage());
         }
     }
 
