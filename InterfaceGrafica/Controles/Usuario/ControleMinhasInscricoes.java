@@ -96,16 +96,18 @@ public class ControleMinhasInscricoes {
         }
     }
 
-    public void buscarPorPalavrasChave(Scanner scanner) {
+    public void buscarPorPalavrasChave(Scanner scanner, GerenciadorDeMenus gerenciadorDeMenus) {
         try {
             System.out.print("Digite as palavras-chave para a busca: ");
             String busca = scanner.nextLine();
-            PreProcessamento preprocessador = new PreProcessamento();
-            List<String> termosProcessados = preprocessador.preProccessString(busca);
             
-            System.out.println("\nPalavras-chave recebidas e pré-processadas:");
-            System.out.println(termosProcessados);
-            System.out.println("=========================================\n");
+            ArrayList<Curso> resultados = crudCurso.buscarPorPalavrasChave(busca);
+            
+            if (resultados == null || resultados.isEmpty()) {
+                System.out.println("Nenhum curso encontrado com as palavras-chave informadas.");
+            } else {
+                gerenciadorDeMenus.irPara(new MenuListaCursos(resultados));
+            }
         } catch (Exception e) {
             System.out.println("Erro ao buscar curso por palavras-chave: " + e.getMessage());
         }
