@@ -1,4 +1,4 @@
-# MyCursos — TP2 · AEDS III · Grupo 02 · PUC Minas 2026
+# MyCursos — TP3 · AEDS III · Grupo 02 · PUC Minas 2026
 
 ## Participantes
 
@@ -62,6 +62,10 @@ O sistema roda em modo texto (terminal) e se baseia no padrão **MVC**, com sepa
 
 ![alt text](screenshots/tela-detalhes-curso.png)
 
+### Tela de Índice Invertido de Cursos (TP3)
+
+![alt text](screenshots/tela-indice-invertido.png)
+
 ---
 
 ## Vídeo de Demonstração
@@ -90,7 +94,7 @@ pucminas-cc-2026-ti3-g02-tp1/
 │   └── EstadoCurso.java                         # Enum de estados do curso
 ├── CRUD/
 │   ├── CrudUsuario.java                         # CRUD de usuários (índice hash de email)
-│   ├── CrudCurso.java                           # CRUD de cursos (hash de código + 2 Árvores B+)
+│   ├── CrudCurso.java                           # CRUD de cursos (hash de código + 2 Árvores B+ + Lista Invertida TF-IDF)
 │   └── CrudCursoUsuario.java                    # CRUD de inscrições (2 Árvores B+) (TP2)
 ├── Genericos/
 │   ├── Arquivo.java                             # Base genérica de arquivo binário
@@ -107,14 +111,16 @@ pucminas-cc-2026-ti3-g02-tp1/
 │   ├── ParIdCursoIdCursoUsuario.java            # Par (idCurso, idCursoUsuario) — índice B+ (TP2)
 │   └── ParIdUsuarioIdCursoUsuario.java          # Par (idUsuario, idCursoUsuario) — índice B+ (TP2)
 ├── IndiceInvertido/
-│   └── PreProcessamento.java                    # Normalização e tokenização de nomes de cursos (TP3)
+│   ├── PreProcessamento.java                    # Normalização e tokenização de nomes de cursos (TP3)
+│   ├── ElementoLista.java                       # Par (idCurso, frequência TF) armazenado em cada bloco (TP3)
+│   └── ListaInvertida.java                      # Lista invertida: dicionário + blocos encadeados (TP3)
 └── InterfaceGrafica/
     ├── Menus/
     │   ├── IMenu.java                           # Interface de menu
     │   ├── GerenciadorDeMenus.java              # Pilha de menus + breadcrumb + sessão do usuário
     │   ├── MenuUtils.java                       # Exibição e leitura de opções de menu
     │   ├── Home/
-    │   │   └── MenuHome.java                    # Menu principal (Meus Dados / Meus Cursos / Sair)
+    │   │   └── MenuHome.java                    # Menu principal (Meus Dados / Meus Cursos / Sair / Debug índice)
     │   ├── Usuario/
     │   │   ├── MenuAuth.java                    # Tela inicial (Login / Cadastro / Sair)
     │   │   ├── MenuLogin.java                   # Formulário de login
@@ -139,7 +145,7 @@ pucminas-cc-2026-ti3-g02-tp1/
     │   │   ├── ControleCadastro.java           # Cadastro com validação de email único
     │   │   ├── ControleMeusDados.java          # Edição de perfil (nome, email, senha)
     │   │   ├── ControleMeusCursos.java         # Listagem e seleção de cursos
-    │   │   └── ControleMinhasInscricoes.java   # Busca por código, listagem e inscrições (TP2)
+    │   │   └── ControleMinhasInscricoes.java   # Busca por código, por palavras-chave (TF-IDF), listagem e inscrições (TP3)
     │   └── Curso/
     │       ├── ControleCurso.java              # Ações sobre curso (estado + navegação)
     │       ├── ControleNovoCurso.java          # Criação de curso
@@ -151,7 +157,7 @@ pucminas-cc-2026-ti3-g02-tp1/
         │   ├── OpcaoAuth.java
         │   ├── OpcaoMeusCursos.java
         │   ├── OpcaoMeusDados.java
-        │   └── OpcaoMinhasInscricoes.java      # Buscar (A), Listar (C), Inscrever (I), Cancelar (X) (TP2)
+        │   └── OpcaoMinhasInscricoes.java      # Buscar (A), Palavras-chave (B), Listar (C), Inscrever (I), Cancelar (X) (TP3)
         └── Curso/
             ├── OpcaoCurso.java
             ├── OpcaoAlterarCurso.java
@@ -234,12 +240,14 @@ pucminas-cc-2026-ti3-g02-tp1/
 - **Cancelar curso**: exibe aviso "Esta ação não pode ser desfeita!", exige confirmação e define estado `'3'`.
 - **Gerenciar inscritos**: navega para `MenuGerenciarInscritos` (TP2).
 
-### Busca e Listagem de Cursos (TP2)
+### Busca e Listagem de Cursos (TP2/TP3)
 
 - **Buscar por código NanoID** (`ControleMinhasInscricoes.buscarPorCodigo`): o usuário informa o código de 10 caracteres. O sistema consulta o índice `HashExtensivel<ParCodigoID>` via `CrudCurso.read(String codigo)` e abre diretamente a tela de detalhes do curso, sem exibir lista intermediária.
+- **Buscar por palavras-chave (TF-IDF)** (`ControleMinhasInscricoes.buscarPorPalavrasChave`) — TP3: o usuário digita termos livres. O sistema pré-processa a query, consulta a `ListaInvertida` para cada termo, calcula o score TF×IDF de cada curso e retorna a lista paginada ordenada por relevância decrescente. Cursos cancelados são excluídos do resultado.
 - **Listar todos os cursos** (`CrudCurso.listarCursosOrdenadoDataInicio`): recupera todos os registros ativos do arquivo via `Arquivo.readAll()` (varredura sequencial do `RandomAccessFile`, pulando registros com lápide `'*'`) e ordena por data de início com `Comparator.comparing(Curso::getDataInicio)`.
 - **Paginação** (`MenuListaCursos`): exibe 10 cursos por página. Teclas `(1)` a `(9)` selecionam o 1º ao 9º item; tecla `(0)` seleciona o 10º (fórmula: `tecla = (posNaPagina + 1) % 10`). Navegação com `(A)` página anterior e `(B)` próxima página.
 - **Detalhes do curso** (`MenuDetalhesCurso`): exibe código NanoID (`getCodigo()`), nome, autor (nome do usuário criador, obtido via `CrudUsuario.read(idUsuario)` e armazenado no campo transiente `autor` de `Curso`), descrição e data de início formatada (`SimpleDateFormat("dd/MM/yyyy")`). Oferece a opção `(A) Fazer minha inscrição no curso`.
+- **Debug do índice invertido** (`OpcaoHome.DEBUG_INDICE_INVERTIDO` — tecla `D` no menu Home): imprime no console todos os termos indexados com suas listas de `(idCurso, TF)` e o total de entidades cadastradas.
 
 ### Gerenciamento de Inscrições (TP2)
 
@@ -281,6 +289,7 @@ Gerencia um `RandomAccessFile` com a seguinte estrutura de registro:
 | Indireto de código | `HashExtensivel<ParCodigoID>` | hash(código) → idCurso |
 | Relacionamento 1:N | `ArvoreBMais<ParIdUsuarioIdCurso>` | (idUsuario, idCurso) |
 | Ordenação por nome | `ArvoreBMais<ParUsuarioNomeCursoId>` | (idUsuario, nome, idCurso) |
+| Índice invertido | `ListaInvertida` | termo → lista de (idCurso, TF) |
 
 ### Índices de Inscrições (`CrudCursoUsuario`) — TP2
 
@@ -302,8 +311,10 @@ dados/
 │   ├── cursos.db               # Registros binários
 │   ├── cursos.d.db / .c.db     # Índice direto (hash)
 │   ├── indiceCodigo.d.db / .c.db    # Índice de código NanoID
-│   ├── arvoreUsuarioCurso.d.db      # Árvore B+ — relação 1:N
-│   └── arvoreUsuarioNome.d.db       # Árvore B+ — ordenação por nome
+│   ├── arvoreUsuarioCurso.d.db           # Árvore B+ — relação 1:N
+│   ├── arvoreUsuarioNome.d.db            # Árvore B+ — ordenação por nome
+│   ├── indiceInvertido.dicionario.db     # Lista invertida — dicionário de termos (TP3)
+│   └── indiceInvertido.blocos.db         # Lista invertida — blocos encadeados (TP3)
 └── cursoUsuario/                    # Criado automaticamente na primeira inscrição (TP2)
     ├── cursoUsuario.db              # Registros binários de inscrições
     ├── cursoUsuario.d.db / .c.db    # Índice direto (hash)
@@ -313,9 +324,17 @@ dados/
 
 ---
 
-## Índice Invertido — Pré-processamento de Texto (TP3)
+## Índice Invertido e Busca TF-IDF (TP3)
 
-O pacote `IndiceInvertido` implementa o pré-processamento de texto que alimentará o índice invertido de busca por nome de curso. A classe `PreProcessamento` transforma um nome bruto em um vetor de termos limpos, prontos para indexação.
+O pacote `IndiceInvertido` implementa o pré-processamento de texto, a estrutura de lista invertida e o algoritmo de ranqueamento TF-IDF para busca por palavras-chave em nomes de cursos.
+
+### Classes do pacote
+
+| Classe | Responsabilidade |
+|---|---|
+| `PreProcessamento` | Normaliza e tokeniza um texto: remove acentos, converte para minúsculas, divide em tokens e filtra stop words |
+| `ElementoLista` | Par `(idCurso, frequência TF)` — unidade armazenada em cada bloco da lista invertida |
+| `ListaInvertida` | Estrutura de índice: dicionário de termos (`RandomAccessFile`) + blocos encadeados de `ElementoLista` |
 
 ### Pipeline de pré-processamento
 
@@ -327,7 +346,7 @@ nome bruto  →  normalizar (NFD + remove diacríticos)  →  minúsculas  →  
 2. **Tokenização**: converte para minúsculas e divide por `[^a-z]+` — qualquer sequência de não-letras (espaços, hífens, pontuação, números) é separador. Tokens com menos de 2 caracteres são descartados.
 3. **Remoção de stop words**: tokens que constam na lista abaixo são excluídos do resultado.
 
-### Exemplos
+### Exemplos de pré-processamento
 
 | Entrada | Saída |
 |---|---|
@@ -335,6 +354,23 @@ nome bruto  →  normalizar (NFD + remove diacríticos)  →  minúsculas  →  
 | `"Banco de Dados NoSQL para Iniciantes"` | `["banco", "dados", "nosql", "iniciantes"]` |
 | `"Introdução às Redes Neurais"` | `["introducao", "redes", "neurais"]` |
 | `"Front-End: HTML/CSS"` | `["front", "end", "html", "css"]` |
+
+### Estrutura da ListaInvertida
+
+Baseada na implementação do Prof. Marcos Kutova (v1.0 2020). Dois arquivos em disco:
+
+- **Dicionário** (`indiceInvertido.dicionario.db`): cabeçalho com contagem de entidades + sequência de registros `[termo (UTF)] [endereço do 1º bloco (long)]`.
+- **Blocos** (`indiceInvertido.blocos.db`): blocos de tamanho fixo, cada um com `[quantidade (short)] [elementos (int idCurso + float TF) × N] [próximo bloco (long)]`. Blocos extras são encadeados quando um bloco fica cheio.
+
+### Algoritmo de ranqueamento TF-IDF
+
+Acionado por `CrudCurso.buscarPorPalavrasChave(String busca)`:
+
+1. Pré-processa a query com `PreProcessamento` — descarta stop words e normaliza.
+2. Para cada termo único da query, recupera a lista de `(idCurso, TF)` da `ListaInvertida`.
+3. Calcula o **IDF** do termo: `log10(total_cursos / doc_freq) + 1`.
+4. Calcula o **TF×IDF** de cada ocorrência e soma os scores de cursos que aparecem em múltiplos termos.
+5. Ordena os cursos por score decrescente e filtra cursos cancelados (estado `'3'`).
 
 ### Lista de stop words
 
@@ -390,11 +426,11 @@ java -jar target/pucminas-cc-2026-ti3-g02-tp1-1.0.0.jar
 
 **1. O índice invertido com os termos dos nomes dos cursos foi criado usando a classe ListaInvertida?**
 
-**Em andamento.**
+**Sim.**
 
 **2. É possível buscar cursos por palavras no menu de inscrição?**
 
-**Em andamento.**
+**Sim.**
 
 **3. O trabalho compila corretamente?**
 
@@ -402,7 +438,7 @@ java -jar target/pucminas-cc-2026-ti3-g02-tp1-1.0.0.jar
 
 **4. O trabalho está completo e funcionando sem erros de execução?**
 
-**Em andamento.**
+**Sim.**
 
 **5. O trabalho é original e não a cópia de um trabalho de outro grupo?**
 
